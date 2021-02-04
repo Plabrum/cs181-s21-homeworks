@@ -187,6 +187,94 @@ For this problem, you can use our staff \textbf{script to compare your code to a
 \newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Solution 1
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{solution}
+\textbf{Solution 1}
+\begin{enumerate}
+    \item \textbf{Write down the loss $\mcL(W)$ over the training data as a function of $W$:}\\
+    
+    Firstly the L2 loss function is defined as follows:
+    
+    $$
+        \mcL(W) = \sum^{n}{(y_n - \hat{y}_n)^2}
+    $$
+    
+    Next we can take our definition of kernelized regression with Mahalanobonis distances used for the kernel function:
+    $$
+        \hat{y}(a)= \frac{\sum^n exp(-(a -x_n)^T W(a - x_n)) y_n}
+                        {\sum^n exp(-(a -x_n)^T W(a - x_n)}
+    $$
+    
+    Now we can substitute the kernel into the L2 function:
+    $$
+        \mcL(W) =  \sum^{n}_{a = 1}{\left[
+            \left(y_a - \left( \frac  {\sum^n_{b=1} exp(-(x_a -x_b)^T W(x_a - x_b)) y_n}
+                            {\sum^n_{b=1} exp(-(x_a -x_b)^T W(x_a - x_b))}\right)
+            \right)^2
+        \right]}
+    $$
+    
+    \item \textbf{Expand the loss function to include $w_{11}$, $w_{12}$, $w_{22}$:}\\
+    
+    In order to simplify the above equation we can introduce a shorthand for $(x_a - x_b)$:
+    $$ Let z = x_a - x_b $$
+    As we are assuming $D = 2$, we can  assign the following:\\
+    $z$ will be a 2 component column vector: 
+    $z = 
+    \begin{bmatrix}
+        z_i \\ 
+        z_j 
+    \end{bmatrix}$ \\
+    
+    Likewise, $W = 
+    \begin{bmatrix}
+        w_{11} & w_{12} \\
+        w_{21} & w_{22}
+    \end{bmatrix}$\\
+    
+    Now we can substitute the $z$ values into our equation:
+    $$
+        \mcL(W) = \sum^{n}_{a = 1}{\left[
+            \left(y_a - \left( \frac  {\sum^n_{b=1} exp(-(z)^T W(z)) y_n}
+                            {\sum^n_{b=1} exp(-(z)^T W(z)})\right)
+            \right)^2
+        \right]}
+    $$
+    
+    We can simplify by multiplying out $z^{T}Wz$ prior to substitution:
+    
+    $$
+        \begin{bmatrix}
+            z_i & z_j\\
+        \end{bmatrix}
+        \begin{bmatrix}
+            w_{11} & w_{12} \\
+            w_{21} & w_{22}
+        \end{bmatrix}
+        \begin{bmatrix}
+            z_i \\
+            z_j
+        \end{bmatrix}
+        = w_{11}z_{i}^{2} + 2w_{12}z_{i}z_{j} + w_{22}z_j^2 
+    $$
+    This can now be substituted into the loss function expression, as $w_{12} = w_{21}$ they have all been set to $w_{12}$ for simplicity.
+    $$
+        \mcL(W) = \sum^{n}_{a = 1}{\left[
+            \left(y_a - \left( \frac  {\sum^n_{b=1} exp(-(w_{11}z_{i}^{2} + 2w_{12}z_{i}z_{j} + w_{22}z_j^2)) y_n}
+                            {\sum^n_{b=1} exp(-(w_{11}z_{i}^{2} + 2w_{12}z_{i}z_{j} + w_{22}z_j^2))}\right)
+            \right)^2
+        \right]}
+    $$
+    
+    \item Derive the gradients of the Loss function.
+    \item See T1\_P1.py file for results.
+\end{enumerate}
+\end{solution}
+\newpage 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 2
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -247,6 +335,24 @@ For this problem, you can use our staff \textbf{script to compare your code to a
 
 
 \newpage 
+\begin{solution}
+\textbf{Solution 2}
+\begin{enumerate}
+    \item 6 plots of kernels
+    \begin{figure}[t]
+        \includegraphics[width=8cm]{Plot}
+        \centering
+    \end{figure}
+    
+    \item Yes!
+    
+    \item When k=1 there will be a dissagreement between kernel based and kNN
+    
+    \item Alpha increases the distance of far away points (i.e. for a given distance away the kernel will duiscrimintate it further) When using kNN we can only select one of the nearest k points, so we have no need to furhter reduce the impact of far points using alpha.
+
+\end{enumerate}
+\end{solution}
+\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 3
@@ -365,16 +471,30 @@ Given the quality of this fit, do you believe that the number of sunspots contro
 \end{enumerate}
 \end{framed}
 
+\newpage
 
+\begin{solution}
+\textbf{Solution 4}
+\begin{enumerate}
+    \item \textbf{Plot each of the basis functions applied to the Year V. Number of Republicans in Senate.}
+    \begin{enumerate}
+    	\item[(a)] $\phi_j(x) = x^j$ for $j=1, \ldots, 5$\\:
+    	    
+        \item[(b)] $\phi_j(x) = \exp{\frac{-(x-\mu_j)^2}{25}}$ for $\mu_j=1960, 1965, 1970, 1975, \ldots 2010$
+    	\item[(c)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 5$
+    	\item[(d)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 25$
+    \end{enumerate}
+\end{enumerate}
+\end{solution}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Name and Calibration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection*{Name}
+\subsection*{Name: Phil Labrum}
 
 \subsection*{Collaborators and Resources}
-Whom did you work with, and did you use any resources beyond cs181-textbook and your notes?
+No collaborators or external resources
 
 \subsection*{Calibration}
 Approximately how long did this homework take you to complete (in hours)? 
