@@ -85,7 +85,7 @@ def plot_kernel_preds(alpha):
 
     # Saving the image to a file, and showing it as well
     plt.savefig('alpha' + str(alpha) + '.png')
-    plt.show()
+    # plt.show()
 
 def plot_knn_preds(k):
     title = 'KNN Predictions with k = ' + str(k)
@@ -111,7 +111,7 @@ def plot_knn_preds(k):
                      ha='center') 
     # Saving the image to a file, and showing it as well
     plt.savefig('k' + str(k) + '.png')
-    plt.show()
+    # plt.show()
 
 def knn_regression(k, test_x, alt_data):
     W = alpha * np.array([[1., 0.], [0., 1.]])
@@ -155,3 +155,5 @@ for alpha in (0.1, 3, 10):
 for k in (1, 5, len(X)-1):
     # TODO: Print the loss for each chart.
     plot_knn_preds(k)
+
+plt.show()
