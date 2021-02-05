@@ -64,6 +64,7 @@ X = np.vstack((np.ones(years.shape), years)).T
 
 # Nothing fancy for outputs.
 Y = republican_counts
+Y_cut = republican_counts[:13]
 # Find the regression weights using the Moore-Penrose pseudoinverse.
 def find_weights(X,Y):
     w = np.dot(np.linalg.pinv(np.dot(X.T, X)), np.dot(X.T, Y))
@@ -175,22 +176,22 @@ def plot_q2_pt(figure, part):
     # Create a single a figure
     plt.figure(figure)
     # Add data points
-    plt.plot(years, republican_counts, 'o')
+    plt.plot(cut_sunspot_counts, Y_cut, 'o')
     plt.xlabel("Sunspot Count")
     plt.ylabel("Number of Republicans in Congress")
     plt.title("Republicans vs Sunspots with "+ part +" basis function applied")
 
     # Perform basis transformation
-    X_new_basis = make_basis(sunspot_counts, part, is_years=False)
+    X_new_basis = make_basis(cut_sunspot_counts, part, is_years=False)
     X_new_grid = make_basis(grid_sunspot_counts, part, is_years=False)
     # This does the linear regression
-    w = find_weights(X_new_basis,Y)
+    w = find_weights(X_new_basis,Y_cut)
     # This creates a series of predicted y_hat values to draw the best-fit line
     grid_Yhat  = np.dot(X_new_grid, w)
-    plt.plot(grid_years, grid_Yhat, '-')
+    plt.plot(grid_sunspot_counts, grid_Yhat, '-')
     
     # TODO: plot and report sum of squared error for each basis
-    print("L2 Loss: ", sum((Y - np.dot(X_new_basis,w))**2))
+    print("L2 Loss: ", sum((Y_cut - np.dot(X_new_basis,w))**2))
 
 def plot_q2():
     basis_list=["a", "c", "d"]
@@ -198,7 +199,7 @@ def plot_q2():
         print("computing basis: ", basis[1])
         plot_q2_pt(*basis)
 
-plot_q1()
-plt.show()
+# plot_q1()
+# plt.show()
 plot_q2()
 plt.show()
