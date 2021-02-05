@@ -54,6 +54,14 @@ def plot_data():
 # Create the simplest basis, with just the time and an offset.
 X = np.vstack((np.ones(years.shape), years)).T
 
+# TODO: basis functions
+# Based on the letter input for part ('a','b','c','d'), output numpy arrays for the bases.
+# The shape of arrays you return should be: (a) 24x6, (b) 24x12, (c) 24x6, (c) 24x26
+# xx is the input of years (or any variable you want to turn into the appropriate basis).
+# is_years is a Boolean variable which indicates whether or not the input variable is
+# years; if so, is_years should be True, and if the input varible is sunspots, is_years
+# should be false
+
 # Nothing fancy for outputs.
 Y = republican_counts
 # Find the regression weights using the Moore-Penrose pseudoinverse.
@@ -64,6 +72,9 @@ def find_weights(X,Y):
 # Compute the regression line on a grid of inputs.
 # DO NOT CHANGE grid_years!!!!!
 grid_years = np.linspace(1960, 2005, 200)
+# Sunspot pre_processing
+cut_sunspot_counts = sunspot_counts[:13]
+grid_sunspot_counts = np.linspace(min(cut_sunspot_counts), max(cut_sunspot_counts), 200)
 # This adds an x_0 so that we can have an offset w_0
 grid_X = np.vstack((np.ones(grid_years.shape), grid_years))
 
@@ -78,7 +89,7 @@ grid_X = np.vstack((np.ones(grid_years.shape), grid_years))
 
 def make_basis(xx,part='a',is_years=True):
 #DO NOT CHANGE LINES 65-69
-    basis_x_list = []
+    basis_x_list = [np.ones(xx.shape)]
     if part == 'a' and is_years:
         xx = (xx - np.array([1960]*len(xx)))/40
         
@@ -87,12 +98,13 @@ def make_basis(xx,part='a',is_years=True):
      
     def apply_trans(basis_func, j_list):
         for j in j_list:
+            # print("doing in j list: ", j)
             def part(x):
                 return basis_func(x,j)
             basis_x =[]
             for i in xx:
                 basis_x.append(part(i))
-            basis_x_list.append((j, np.array(basis_x)))
+            basis_x_list.append(np.array(basis_x))
 
     # Perform basis functions
     if part == "a":
@@ -102,15 +114,34 @@ def make_basis(xx,part='a',is_years=True):
             return pow(x,j)
 
         apply_trans(basis_func, j_list)
-        
-    else:
-        basis_x_list.append((1, [xx]))
+    
+    if part == "b":
 
-    # elif part == "b":
-    #     basis_func = exp()
-    #     j_list = np.arange(1960,2015,5)
+        j_list = list(range(1960,2015,5))
+        def basis_func(x,j):
+            return np.exp((-1*((x-j)**2))/25)
 
-    return basis_x_list# Nothing fancy for outputs.
+        apply_trans(basis_func, j_list)
+   
+    if part == "c":
+
+        j_list = list(range(1,6,1))
+        def basis_func(x,j):
+            return np.cos(x/j)
+
+        apply_trans(basis_func, j_list)
+
+    if part == "d":
+
+        j_list = list(range(1,26,1))
+        def basis_func(x,j):
+            return np.cos(x/j)
+
+        apply_trans(basis_func, j_list)
+
+    basis_x_array = np.array(basis_x_list).T
+#     print("array shape of part "+part+": ", basis_x_array.shape)
+    return basis_x_array
 
 def plot_q1_pt(figure, part):
     # Create a single a figure
@@ -123,27 +154,51 @@ def plot_q1_pt(figure, part):
 
     # Perform basis transformation
     X_new_basis = make_basis(years, part, is_years=True)
+    X_new_grid = make_basis(grid_years, part, is_years=True)
+    # This does the linear regression
+    w = find_weights(X_new_basis,Y)
+    # This creates a series of predicted y_hat values to draw the best-fit line
+    grid_Yhat  = np.dot(X_new_grid, w)
+    plt.plot(grid_years, grid_Yhat, '-')
     
-    # Add a new plot for each of the j basis cases
-    for j, j_basis in X_new_basis:
-        
-        # X_matrix = np.vstack((np.ones(years.shape), years)).T
-        # This does the linear regression
-        add_ones = np.vstack((np.ones(j_basis.shape), j_basis)).T
-        w = find_weights(add_ones,Y)
-        # This creates a series of predicted y_hat values to draw the best-fit line
-        grid_Yhat  = np.dot(grid_X.T, w)
-        plt.plot(grid_years, grid_Yhat, '-', label=str(j))
+    # TODO: plot and report sum of squared error for each basis
+    print("L2 Loss: ", sum((Y - np.dot(X_new_basis,w))**2))
 
 def plot_q1():
-    # basis_list = ["a", "b", "c", "d"]
-    basis_list=["a"]
+# basis_list = ["a", "b", "c", "d"]
+    basis_list=["a", "b", "c", "d"]
     for basis in enumerate(basis_list):
         print("computing basis: ", basis[1])
         plot_q1_pt(*basis)
 
-# TODO: plot and report sum of squared error for each basis
-L2_loss = 0
+def plot_q2_pt(figure, part):
+    # Create a single a figure
+    plt.figure(figure)
+    # Add data points
+    plt.plot(years, republican_counts, 'o')
+    plt.xlabel("Sunspot Count")
+    plt.ylabel("Number of Republicans in Congress")
+    plt.title("Republicans vs Sunspots with "+ part +" basis function applied")
+
+    # Perform basis transformation
+    X_new_basis = make_basis(sunspot_counts, part, is_years=False)
+    X_new_grid = make_basis(grid_sunspot_counts, part, is_years=False)
+    # This does the linear regression
+    w = find_weights(X_new_basis,Y)
+    # This creates a series of predicted y_hat values to draw the best-fit line
+    grid_Yhat  = np.dot(X_new_grid, w)
+    plt.plot(grid_years, grid_Yhat, '-')
+    
+    # TODO: plot and report sum of squared error for each basis
+    print("L2 Loss: ", sum((Y - np.dot(X_new_basis,w))**2))
+
+def plot_q2():
+    basis_list=["a", "c", "d"]
+    for basis in enumerate(basis_list):
+        print("computing basis: ", basis[1])
+        plot_q2_pt(*basis)
 
 plot_q1()
+plt.show()
+plot_q2()
 plt.show()
