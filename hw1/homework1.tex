@@ -573,30 +573,54 @@ Given the quality of this fit, do you believe that the number of sunspots contro
 \begin{enumerate}
     \item \textbf{Plot each of the basis functions applied to the Year V. Number of Republicans in Senate.}
     \begin{enumerate}
-    	\item[(a)] $\phi_j(x) = x^j$ for $j=1, \ldots, 5$\\:
+    	\item[(a)] $\phi_j(x) = x^j$ for $j=1, \ldots, 5$:\\
+    	L2 Loss:  394.9803839890865 \\
     	\begin{figure}[H]
-            \includegraphics[width=8cm]{hw1/T1P2_plots/plot3.png}
+            \includegraphics[width=8cm]{hw1/T1P4_plots/plot0.png}
             \centering
         \end{figure}
-        \item[(b)] $\phi_j(x) = \exp{\frac{-(x-\mu_j)^2}{25}}$ for $\mu_j=1960, 1965, 1970, 1975, \ldots 2010$
-    	\item[(c)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 5$
-    	\item[(d)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 25$
-    	
-computing basis:  a
-L2 Loss:  394.9803839890865
-computing basis:  b
-L2 Loss:  54.2730966167196
-computing basis:  c
-L2 Loss:  1082.8088559867185
-computing basis:  d
-L2 Loss:  39.001226916562295
-computing basis:  a
-L2 Loss:  1156.987832119872
-computing basis:  c
-L2 Loss:  990.565015704863
-computing basis:  d
-L2 Loss:  604.716476582372
+        \item[(b)] $\phi_j(x) = \exp{\frac{-(x-\mu_j)^2}{25}}$ for $\mu_j=1960, 1965, 1970, 1975, \ldots 2010$: \\
+        L2 Loss:  54.2730966167196:\\
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw1/T1P4_plots/plot1.png}
+            \centering
+        \end{figure}
+    	\item[(c)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 5$: \\
+    	L2 Loss:  1082.8088559867185 \\
+    	\begin{figure}[H]
+            \includegraphics[width=8cm]{hw1/T1P4_plots/plot2.png}
+            \centering
+        \end{figure}
+    	\item[(d)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 25$: \\
+    	L2 Loss:  39.001226916562295 \\
+    	\begin{figure}[H]
+            \includegraphics[width=8cm]{hw1/T1P4_plots/plot3.png}
+            \centering
+        \end{figure}
     \end{enumerate}
+    
+    \item \textbf{Plot each of the basis functions applied to the Number of Sunspots V. Number of Republicans in Senate.}
+    \begin{enumerate}
+    	\item[(a)] $\phi_j(x) = x^j$ for $j=1, \ldots, 5$:\\
+    	L2 Loss:  1156.987832119872 \\
+    	\begin{figure}[H]
+            \includegraphics[width=8cm]{hw1/T1P4_plots/plot4.png}
+            \centering
+        \end{figure}
+        \item[(b)] $\phi_j(x) = \exp{\frac{-(x-\mu_j)^2}{25}}$ for $\mu_j=1960, 1965, 1970, 1975, \ldots 2010$: \\
+        L2 Loss:  990.565015704863:\\
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw1/T1P4_plots/plot5.png}
+            \centering
+        \end{figure}
+    	\item[(d)] $\phi_j(x) = \cos(x / j)$ for $j=1, \ldots, 25$: \\
+    	L2 Loss:  604.716476582372 \\
+    	\begin{figure}[H]
+            \includegraphics[width=8cm]{hw1/T1P4_plots/plot6.png}
+            \centering
+        \end{figure}
+    \end{enumerate}
+    
 \end{enumerate}
 
 \newpage
