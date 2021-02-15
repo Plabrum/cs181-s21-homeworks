@@ -1,2 +1,5 @@
 .DS_Store
 __pycache__/
+.ipynb_checkpoints
+hw1/notebooks
+hw1/images
