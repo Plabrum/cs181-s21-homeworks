@@ -34,12 +34,7 @@ class LogisticRegressor:
         self.runs = runs
 
     def __gradient(self, x, y, y_hats):
-        grads_list = []
-        for i in range(len(x)):
-            grad = (y_hats[i] - y[i])*x[i]
-            print()
-        
-        return 
+        return np.array(sum((y_hats - y)*x)).reshape(x.shape[1],1)
 
     # TODO: Optimize w using gradient descent
     def fit(self, x, y, w_init=None):
@@ -54,7 +49,12 @@ class LogisticRegressor:
         for i in range(self.runs):
             y_hats = self.predict(x)
             gradient = self.__gradient(x, y, y_hats)
-            self.W = self.W - (gradient/10)*self.eta
+            self.W = self.W - ((gradient/10)*self.eta)
+
+    # TODO: Fix this method!
+    def predict(self, x):
+        # do we need to add a sigmoid here?
+        return sigmoid(np.dot(x, self.W))
             
     '''
     Plan for fitting the model:
@@ -69,10 +69,7 @@ class LogisticRegressor:
     '''
     
     
-    # TODO: Fix this method!
-    def predict(self, x):
-        # do we need to add a sigmoid here?
-        return sigmoid(np.dot(x, self.W))
+
 
 # Function to visualize prediction lines
 # Takes as input last_x, last_y, [list of models], basis function, title

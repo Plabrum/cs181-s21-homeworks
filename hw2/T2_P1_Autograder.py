@@ -60,10 +60,11 @@ def checker_t2_p1():
     
     x3 = basis3(x)
     modelTest.fit(x3,y,w_init=np.ones((x3.shape[1], 1)))
-    
+    print("Weights for basis 3: ", modelTest.W)
     if len(TestWs[2])!=len(modelTest.W):
         print("Your w for basis3 has the wrong shape")
     else:
+        print(modelTest.W)
         basis3_checker = np.allclose(TestWs[2], modelTest.W, rtol=0, atol=1e-2)
         if basis3_checker:
             basis3_checker = "Pass"
