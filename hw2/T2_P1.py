@@ -29,14 +29,12 @@ def basis3(x):
 
 class LogisticRegressor:
     def __init__(self, eta, runs):
-        # Your code here: initialize other variables here
         self.eta = eta
         self.runs = runs
 
     def __gradient(self, x, y, y_hats):
         return np.array(sum((y_hats - y)*x)).reshape(x.shape[1],1)
 
-    # TODO: Optimize w using gradient descent
     def fit(self, x, y, w_init=None):
         # Keep this if case for the autograder
         if w_init is not None:
@@ -51,26 +49,10 @@ class LogisticRegressor:
             gradient = self.__gradient(x, y, y_hats)
             self.W = self.W - ((gradient/10)*self.eta)
 
-    # TODO: Fix this method!
     def predict(self, x):
         # do we need to add a sigmoid here?
-        return sigmoid(np.dot(x, self.W))
-            
-    '''
-    Plan for fitting the model:
-    1. Calculate y hat of each x variable (use predict func? but that doesnt apply sigmoid?)
-    2. Calculate the gradient of the loss fuction (cross entropy error)
-    3. adjust the weights
-    4. repeat for number of runs
+        return sigmoid(np.dot(x, self.W))            
     
-    Issues: 
-    1. dont know where the averaging comes into play (why is the gradient of the loss just a summation?)
-    2. Are all of the weights changed by the same amount each time?
-    '''
-    
-    
-
-
 # Function to visualize prediction lines
 # Takes as input last_x, last_y, [list of models], basis function, title
 # last_x and last_y should specifically be the dataset that the last model
@@ -111,7 +93,7 @@ def visualize_prediction_lines(last_x, last_y, models, basis, title):
     # Mean / expectation of learned models over all datasets
     plt.plot(X_pred, np.mean(Y_hats, axis=0), 'k', linewidth=5)
 
-    plt.savefig(title + '.png')
+    plt.savefig('P1_plots' + title + '.png')
     plt.show()
 
 # Function to generate datasets from underlying distribution
