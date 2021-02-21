@@ -93,7 +93,7 @@ def visualize_prediction_lines(last_x, last_y, models, basis, title):
     # Mean / expectation of learned models over all datasets
     plt.plot(X_pred, np.mean(Y_hats, axis=0), 'k', linewidth=5)
 
-    plt.savefig('P1_plots' + title + '.png')
+    plt.savefig(title + '.png')
     plt.show()
 
 # Function to generate datasets from underlying distribution
