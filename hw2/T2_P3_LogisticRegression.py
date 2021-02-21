@@ -42,9 +42,9 @@ class LogisticRegression:
         # Training for a binary regressor:
         for i in range(runs):
             Y_hats = self.__predict(X_preds)
-            self.loss_list.append(self.__loss(Y_hot, Y_hats))
             gradient = self.__gradient(X_preds, Y_hot, Y_hats)
-            self.W = self.W - (gradient*self.eta) - self.lam*self.W
+            self.loss_list.append(self.__loss(Y_hot, Y_hats))
+            self.W = self.W - np.multiply(gradient, self.eta) - np.multiply(self.lam, self.W)
 
     def __predict(self, X_preds):
         return np.array([self.__softmax(row) for row in np.dot(X_preds, self.W.T)])

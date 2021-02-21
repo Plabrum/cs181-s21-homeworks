@@ -12,25 +12,72 @@ class GaussianGenerativeModel:
     def __init__(self, is_shared_covariance=False):
         self.is_shared_covariance = is_shared_covariance
 
-    # Just to show how to make 'private' methods
-    def __dummyPrivateMethod(self, input):
-        return None
 
     # TODO: Implement this method!
     def fit(self, X, y):
-        return
+        self.mu_list = []
+        self.cov_list = []
+        self.pi_list = []
+        self.K = len(np.unique(y, return_counts=True)[0])
+        # y_trans = {0: [1,0,0], 1: [0,1,0], 2: [0,0,1]}
+        # Y_hot = np.array([y_trans[x] for x in y])
+
+        for k in range(self.K):
+            y_count = np.unique(y, return_counts=True)[1][k]
+            # print("Y counts: ", y_count)
+            self.pi_list.append(y_count/len(X))
+            # print("Pis: ", self.pi_list[k])
+            self.mu_list.append(sum([x for (x,_y) in zip(X,y) if _y==k])/y_count)
+            # print("Mu: ", self.mu_list[k])
+            
+            x_lis = []
+            for xi, yi in zip(X, y):
+                if yi == k:
+                    dif = np.array([xi - self.mu_list[yi]])
+                    x_lis.append(np.dot((dif).T, (dif)))
+
+            # print("X list", x_lis)
+            self.cov_list.append(sum(x_lis)/y_count)
+            # Counts of each list 
+
+        self.shared_cov = sum([self.cov_list[k]*self.pi_list[k] for k in range(self.K)])
 
     # TODO: Implement this method!
     def predict(self, X_pred):
-        # The code in this method should be removed and replaced! We included it
-        # just so that the distribution code is runnable and produces a
-        # (currently meaningless) visualization.
-        preds = []
-        for x in X_pred:
-            z = np.sin(x ** 2).sum()
-            preds.append(1 + np.sign(z) * (np.abs(z) > 0.3))
-        return np.array(preds)
+        def pred(x):
+            class_probs = []
+            # return a 1x3 of the probabilities of each
+            for k in range(self.K):
+                if self.is_shared_covariance:
+                    cov = self.shared_cov
+                else:
+                    cov = self.cov_list[k]
+                d = x - self.mu_list[k]
+                # print(cov)
+                step1 = np.dot(np.linalg.inv(cov), d.T)
+                step2 = np.exp(-0.5*np.dot(d, step1))
+                class_probs.append(self.pi_list[k] * step2)
+            return np.argmax(class_probs)
 
+        return np.array([pred(x) for x in X_pred])
+        
+    
     # TODO: Implement this method!
     def negative_log_likelihood(self, X, y):
-        pass
+        log_likelihood = 0
+        for i in range(len(X)):
+            for k in range(self.K):
+                if self.is_shared_covariance:
+                    cov = self.shared_cov
+                else:
+                    cov = self.cov_list[k]
+
+                if y[i] == k:
+                    mv = mvn.pdf(x=X[i], mean=self.mu_list[k], cov=cov)
+                    log_likelihood += np.log(self.pi_list[k] * mv)
+        
+        return log_likelihood*-1
+
+
+
+
