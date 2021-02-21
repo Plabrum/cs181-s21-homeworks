@@ -375,11 +375,23 @@ values in \texttt{T2\_P3.py} for logistic regression.
     \begin{enumerate}
         \item Plot for the Logistic Regression Model
         \begin{figure}[H]
-            \includegraphics[width=8cm]{hw2/P3_plots/Basis 3 Plot.png}
+            \includegraphics[width=8cm]{hw2/P3_plots/logistic_regression_result.png}
             \centering
         \end{figure}
     \end{enumerate}
-    \item Log-Likelihood Loss plot:
+    \item Log-Likelihood Loss plot For Eta=0.01 Lambda=0.001:
+    \begin{figure}[H]
+        \includegraphics[width=8cm]{hw2/P3_plots/logistic_regression_loss.png}
+        \centering
+    \end{figure}
+    My choices for eta and lambda are chosen so that the log-likelihood has a smooth descent and the lowest final log-likelihood loss value. The values of 0.01 and 0.001 for eta and lambda respectively make sense as we need a small enough eta to not overshoot the optimum and cause oscillation (as found in the  0.05 case). It also makes sense that the regularization penalty is smaller than the learning rate, it seems that in the case $lambda>eta$ the model does not reach the lowest possible loss value.\\
+    Of all of the plots, this combination had the lowest total loss value, and one of the faster convergence rates (but not so fast that it reduces the convergence efficacy).
+    \item Star with Magnitude 6 and Temperature 2:
+    \begin{enumerate}
+        \item Linear Regression Model:
+        This model would classify the star as a \textbf{giant}. The classifier doesn't give an indication as to how trustworthy the result is as the new result is clearly in the giant decision boundary but seems to be from the dwarf stars.
+        \item
+    \end{enumerate}
 \end{enumerate}
 
 \newpage
