@@ -217,8 +217,24 @@ $\boldX^{-\top} := (\boldX^{\top})^{-1}$
  \end{problem}
 
 
-\subsection*{Solution}
+\subsection*{Solution 2}
+\textbf{Part 1:} The negative log likelihood of the data set: $-\ln p(D; \pi)$
 
+$$
+ p(D;\pi) = \prod_{i=1}^{N} p(x_i, y_i; \pi)
+$$
+$$
+= \prod_{i=1}^{N} p(x_i| y_i, \pi) p(y_i|\pi) \\
+$$
+$$
+= \prod_{i=1}^{N} \prod_{k=1}^{K} (p(x_i| y_i = C_k) \pi_k)^{y_{ik}} \\
+$$
+$$
+-\ln p(D; \pi) = - \sum_{i=1}^N \sum_{k=1}^K y_{ik}[ln(p(x_i|y_i = C_k) \pi_k)]
+$$
+\\
+
+\textbf{Part 2:} The expression for the maximum-likelihood estimator: $\hat{\pi_k}$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
