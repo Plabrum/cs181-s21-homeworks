@@ -4,3 +4,5 @@ __pycache__/
 *.ipynb_checkpoints
 hw1/notebooks
 hw1/images
+hw2/remaining_figs
+hw2/helper
