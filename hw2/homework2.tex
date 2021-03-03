@@ -275,6 +275,109 @@ $$
 \\
 
 \textbf{Part 2:} The expression for the maximum-likelihood estimator: $\hat{\pi_k}$
+
+We can use the constraint $\sum_k\pi_k - 1 = 0$ and form a Larange Multiplier:
+$$
+    L(\pi, \lambda) = -\ln p(D; \pi) + \lambda(\sum^k (\pi_k) -1)
+$$
+With this expression we can take the derivative of $L(\pi, \lambda)$ (using log rules to split the expression):\\
+$$
+    \frac{\partial L(\pi_k, \lambda)}{\partial \pi_k} = \frac{\partial}{\partial \pi_k} \left[ \sum^N_i \sum^K_k y_{ik} \left( \ln (p(x_i | y_i = C_k )) + \ln(\pi_k)  \right) - \lambda(\sum^k (\pi_k) -\lambda  \right]
+$$
+As we are taking the derivative with respect to $\pi_k$ we can simplify:
+
+$$
+    \frac{\partial L(\pi_k, \lambda)}{\partial \pi_k} =
+    \sum^N_i \sum^K_k \frac{y_{ik}}{\pi_k} - \lambda\sum^k 1
+$$
+
+$$
+    \frac{\partial L(\pi_k, \lambda)}{\partial \pi_k} =
+    \sum^N_i \sum^K_k \frac{y_{ik}}{\pi_k} - \lambda k
+$$
+Now we can simplify for a given class and set the derivative to 0:
+$$
+    0 = \sum^N_i  \frac{y_{ik}}{\pi_k} - \lambda k
+$$
+We can define $N_k$ as the number of elements in the class k:
+$$
+    \pi_k = \frac{N_k} {\lambda}
+$$
+Now we can take the derivative with respect to $\lambda$:
+$$
+frac{\partial L(\pi_k, \lambda)}{\partial \lambda} = \sum^k (\pi_k) -1
+$$
+And set it = 0:
+$$
+\sum^k (\pi_k) = 1
+$$
+Finally we can substitute in our value of $\pi_k$ from before:
+$$
+\sum^k (\frac{N_k} {\lambda}) = 1
+$$
+We can see that $\lambda=\sum^k N_k$, therefore $\lambda$ is equal to the number of values in out dataset as we have sum across each class. \\
+Therefore, $\pi_k = \frac{N_k}{\lambda}$\\
+
+This answer is intuitive because the probability of being in class $k$ is simply the fraction of values in class $k$ to all values.
+
+\item \textbf{Part 3} Derive the gradient of the MLE with respect to vector $\mu_k$:
+$$
+    L(\pi, \lambda) = -\ln p(D; \pi) + \lambda(\sum^k (\pi_k) -1)
+$$
+
+As we can assume:
+$$p(\boldx | \boldy = C_k) = \mathcal{N}(\boldx |  \bmu_k, \bSigma), \text{\ for\ }k \in \{1,\ldots, K\}$$
+We can substitute the following into our dervative:
+$$
+    \frac{\partial L(\pi_k, \lambda)}{\partial \mu_k} = \frac{\partial}{\partial \pi_k} \left[ \sum^N_i \sum^K_k y_{ik} 
+    \left( \ln ( \mathcal{N}(\boldx |  \bmu_k, \bSigma) + \ln(\pi_k) \right) \right]
+$$
+We can now substitute the multivariate normal distribution into our equation:
+$$
+    \frac{\partial L(\pi_k, \lambda)}{\partial \mu_k} = \frac{\partial}{\partial \pi_k} \left[ \sum^N_i \sum^K_k y_{ik}
+    \left( \ln 
+    \left(\frac{1}{\sqrt{(2\pi)^n|\boldsymbol\Sigma|}}
+    \exp\left(-\frac{1}{2}({\boldsymbol x_i}-{\boldsymbol \mu_k})^T {\boldsymbol\Sigma}^{-1}({\boldsymbol x_i}-{\boldsymbol \mu_k})
+    \right)\right)
+    + \ln(\pi_k) \right) \right]
+$$
+Massively simplifying and using cookbook 84:
+$$
+    \frac{\partial L(\pi_k, \lambda)}{\partial \mu_k} = \left[ \sum^N_i \sum^K_k y_{ik} ( \Sigma^{-1} (\mu_k -x_i))  \right]
+$$
+
+\item \textbf{Part 4} Derive the MLE estimator\\
+Continuing from before, we can set our gradient to 0:
+$$
+    \left[ \sum^N_i \sum^K_k y_{ik} ( \Sigma^{-1} (\mu_k -x_i))  \right] = 0
+$$
+For a given class (and therefore a given $\mu_k$) we can simplify and remove the covariance matrix from the summation as it is fixed after fitting.\\
+$$
+    \at{\mu_k} = \frac{\Sigma^-1 \sum^n_i y_{ik}x_i}{\Sigma^-1 \sum^n_i y_{ik}} 
+$$
+$$
+    \at{\mu_k} = \frac{ \sum^n_i y_{ik}x_i}{\sum^n_i y_{ik}} 
+$$
+\item \textbf{Part 5} Derive the gradient to the negative log-likelihood operator with respect to the covariance matrix.\\
+As the covariance matrix is symmetric, we can use the matrix cookbook formula:
+\begin{align*}
+  & \frac{\partial \bolda^\top \boldX^{-1} \boldb}{\partial \boldX} = - \boldX^{-\top} \bolda \boldb^\top \boldX^{-\top} \\
+  & \frac{\partial \ln | \det (\boldX) |}{\partial \boldX} = \boldX^{-\top}
+ \end{align*}
+ 
+$$
+    \frac{\partial L(\pi_k, \lambda)}{\partial \Sigma} = \frac{1}{2} \left[ \sum^N_i \sum^K_k y_{ik} ( \Sigma^{-T} - \Sigma^{-T}(x_i - \mu_k)(\mu_k - x_i)^{T}\Sigma^{-T}   \right]
+$$
+
+\item \textbf{Part 6} Derive the  Maximum likelihood estimator $\hat{\Sigma}$:
+We take the above gradient and set it to 0 as before:\\
+$$
+    \frac{1}{2} \left[ \sum^N_i \sum^K_k y_{ik} ( \Sigma^{-T} - \Sigma^{-T}(x_i - \mu_k)(\mu_k - x_i)^{T}\Sigma^{-T}   \right] = 0
+$$
+Therefore we are left with:
+$$
+    \hat{\Sigma} = \frac{\sum^N_i \sum^K_k y_{ik} (x_i - \mu_k)(\mu_k - x_i)^{T}}{\sum^N_i \sum^K_k y_{ik}}
+$$
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -378,6 +481,31 @@ values in \texttt{T2\_P3.py} for logistic regression.
             \includegraphics[width=8cm]{hw2/P3_plots/logistic_regression_result.png}
             \centering
         \end{figure}
+        \item Plot for the Generative Gaussian Model with seperate covariance
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw2/P3_plots/generative_result_separate_covariances.png}
+            \centering
+        \end{figure}
+        \item Plot for the Generative Gaussian Model with shared covariance
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw2/P3_plots/generative_result_shared_covariances.png}
+            \centering
+        \end{figure}
+        \item Plot for the KNN Model with K=1
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw2/P3_plots/knn1_result.png}
+            \centering
+        \end{figure}
+        \item Plot for the KNN Model with K=3
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw2/P3_plots/knn3_result.png}
+            \centering
+        \end{figure}
+        \item Plot for the KNN Model with K=5
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw2/P3_plots/knn5_result.png}
+            \centering
+        \end{figure}
     \end{enumerate}
     \item Log-Likelihood Loss plot For Eta=0.01 Lambda=0.001:
     \begin{figure}[H]
@@ -386,11 +514,20 @@ values in \texttt{T2\_P3.py} for logistic regression.
     \end{figure}
     My choices for eta and lambda are chosen so that the log-likelihood has a smooth descent and the lowest final log-likelihood loss value. The values of 0.01 and 0.001 for eta and lambda respectively make sense as we need a small enough eta to not overshoot the optimum and cause oscillation (as found in the  0.05 case). It also makes sense that the regularization penalty is smaller than the learning rate, it seems that in the case $lambda>eta$ the model does not reach the lowest possible loss value.\\
     Of all of the plots, this combination had the lowest total loss value, and one of the faster convergence rates (but not so fast that it reduces the convergence efficacy).
+    \item Report the negative log-likelihood loss for the Gaussian Models:\\
+    \textbf{Separate Covariance negative log-likelihood:} 63.97035984092419 \\
+    \textbf{Shared Covariance negative log-likelihood:} 116.39446507788162
+    \\
+    The Separate co-variance model has a lower loss - this result is intuitive as it is able to tailor itself to the data more closely, thereby further minimizing. This can be seen on the graph with the prediction areas closely matching the datapoints.\\
     \item Star with Magnitude 6 and Temperature 2:
     \begin{enumerate}
-        \item Linear Regression Model:
-        This model would classify the star as a \textbf{giant}. The classifier doesn't give an indication as to how trustworthy the result is as the new result is clearly in the giant decision boundary but seems to be from the dwarf stars.
-        \item
+        \item \textbf{Linear Regression Model: Giant}
+        \item \textbf{Shared Gaussian Model: Giant}
+        \item \textbf{Separate Gaussian Model: Dwarf}
+        \item \textbf{KNN with K=1 Model: Dwarf}
+        \item \textbf{KNN with K=3 Model: Dwarf}
+        \item \textbf{KNN with K=5 Model: Dwarf}\\\\
+        These classifier do not specifically give indication as to how trustworthy the predictions are, but, having said that - I would prioritize selecting models that have smooth decision boundaries around the classes. The K=1 and shared Gaussian models lend appear much more generalize-able to all new data from outside of our recorded dataset. Conversely, I would not trust the predictions of the Gaussian model with separate covariance matrices, the tight decision boundaries seem too fitted to the data. 
     \end{enumerate}
 \end{enumerate}
 
