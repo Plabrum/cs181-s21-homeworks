@@ -81,7 +81,7 @@ class KMeans(object):
         # initialisation of cluster asignment i.e. responsibility vectors
         self.resp = self.__make_one_hot(np.random.randn(X.shape[0], self.K))
         # Set inital mu
-        self.mu = np.random.randn(K, X.shape[1])
+        self.mu = np.random.randn(self.K, X.shape[1])
         self.loss_list = []
 
         # record the losses at each epoch
@@ -108,8 +108,6 @@ class KMeans(object):
     def get_mean_images(self):
         return self.mu
 
-
-K = 10
 KMeansClassifier = KMeans(K=10)
 KMeansClassifier.fit(large_dataset)
 
