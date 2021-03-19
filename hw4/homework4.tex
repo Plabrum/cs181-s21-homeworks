@@ -107,14 +107,77 @@ the questions below when composing your answers, and to justify each step.
 
 \end{problem}
 
-\subsection*{Solution 1}
 
+\newpage
+
+\subsection*{Solution 1}
 \begin{enumerate}
-    \item 
+    \item \textbf{Plot the transformed training data in R2 and draw the optimal decision boundary of the max margin classifier}\\
+    
+    The data was plotted on a 2d plane, with a decision boundary drawn at $\Phi (x) = 1$, the classes are colored with blue representing the $ Y = 1$ class and red representing the $Y = -1$ class.
     \begin{figure}[H]
-        \includegraphics[width=8cm]{hw4/hw4p1.png}
+        \includegraphics[width=10cm]{hw4/img/hw4p1.png}
         \centering
     \end{figure}
+    
+    \item \textbf{What is the value of the margin achieved by the optimal decision boundary found in Part 1?}\\
+    
+    The value of the margin found in part 1 is $1$.\\
+    
+    \item \textbf{Identify a unit vector that is orthogonal to the decision boundary.}\\
+    
+    The unit vector $\vec{V} = [0,1]$ is orthogonal to the decision boundary.\\
+    
+    \item \textbf{Give an expression for \textit{all possible} (w, w0) that define the optimal decision boundary from 1.1}\\
+    
+    First, we know that at the boundary, $W\Phi(x) + w_0 = 0$, we also know that our $W$ and the vector $\vec{V} = [0,1]$ are orthogonal to the decision boundary. Therefore, we know $W \propto V$, as we can set $W = [w_a, w_b]$ we can use $\vec{V}$ to say that $W = [0, w_b]$.
+    
+    Let's look at the case where $y=-1$, here $\Phi(x) = -1$. By using our value of $W$ from before we can now write: $w_b(-1) + w_0 = 0$ for a point at the decision boundary.
+    
+    \begin{align*}
+        w_b &= w_0 \\
+        W &= [0, w_0]
+    \end{align*}
+    
+    This defines the set of all $W$ and $w_0$ for the optimal decision boundary
+    
+    \item \textbf{Using your answers so far, what particular solution to $W$ will be optimal for the optimization problem?}\\
+    
+    Using the equation above:
+    
+    \begin{align*}
+        \min_{\mathbf{w}, w_0} \frac{1}{2}\|\mathbf{w}\|_2^2 \quad \text{s.t.} \quad & y_i(\mathbf{w}^\top \bphi(x_i) + w_0) \geq 1,~\forall i \in \{1,\ldots, n\}
+    \end{align*}
+    
+    We can simplify the optimisation to only work over the $w_0$ from part 4, $x_{2i}$ represents the $i^{th}$ element of x in the second row (i.e. only those transformed by the basis function). 
+    \begin{align*}
+        &\min_{\mathbf{w_0}} \mathbf{w_0} \quad \text{s.t.} \quad & y_i(w_0 \bphi(x_{2i}) + w_0) \geq 1,~\forall i \in \{1,\ldots, n\} \\
+        &= \min_{\mathbf{w_0}} \mathbf{w_0} \quad \text{s.t.} \quad & y_i w_0 ( \bphi(x_{2i}) + 1) \geq 1,~\forall i \in \{1,\ldots, n\} \\
+    \end{align*}
+    
+    Using the points from the graph above, we can see that the minimum $w_0$ that satisfies is at 1, $\therefore \quad w = [0,1]$. 
+    
+    \item \textbf{What is the corresponding optimal value of $w_0$ for the $w$ found in part 5?}\\
+    
+    The optimal $w$ found in part 5 was $ w = [0,1]$, we can substitute this into the discriminant function to get:\\
+    
+    \begin{align*}
+        h(\bphi(x);\boldw,w_0) &= \boldw^\top\bphi(x) +w_0\\
+        h(\bphi(x);\boldw,w_0) &= 1\bphi(x_2) + 1 \\
+        h(\bphi(x);\boldw,w_0) &= \frac{-3}{8}x^2 + \frac{2}{3} x^4 + 1 \\
+    \end{align*}
+    
+    \item \textbf{Which points could possibly be support vectors of the classifier?  Confirm that your solution in Part 6 makes the constraints above tight—that is, met with equality—for these candidate points.}\\
+     
+    There are 5 points that could make suitable support vectors: $\{ (-2 , +1 ) , (-1,  -1 ), (0, +1), ( 1 , -1 ), ( 2 , +1 )\}$, these 5 points surround the decision boundary. We can justify that they are valid support vectors by plugging in their x,y vales into $y(\frac{-3}{8}x^2 + \frac{2}{3} x^4 + 1)$ and show that it is $\geq 1$.
+    \begin{align*}
+        1(\frac{-3}{8}(-2)^2 + \frac{2}{3} (-2)^4 + 1) &= 1 \\
+        -1(\frac{-3}{8}(-1)^2 + \frac{2}{3} (-1)^4 + 1) &= 1 \\
+        1(\frac{-3}{8}(0)^2 + \frac{2}{3} (0)^4 + 1) &= 1 \\
+        -1(\frac{-3}{8}(1)^2 + \frac{2}{3} (1)^4 + 1) &= 1 \\
+        1(\frac{-3}{8}(2)^2 + \frac{2}{3} (2)^4 + 1) &= 1 \\
+    \end{align*}
+   
 \end{enumerate}
 
 \newpage
@@ -181,7 +244,17 @@ The code in \texttt{T4\_P2.py} loads the images into your environment into two a
 
 \end{problem}
 
-\subsection*{Solution}
+\subsection*{Solution 2}
+
+\begin{enumerate}
+    \item \textbf{Plot the K-Means objective function as function of iterations and verify that it never increases.}\\
+    
+    Starting at a random initialisation, we can see the loss decreasing steadily with epoch, the graph is monotonic and the loss never increases at any point.
+    \begin{figure}[H]
+        \includegraphics[width=10cm]{hw4/img/p3_1.png}
+        \centering
+    \end{figure}
+\end{enumerate}
 
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
