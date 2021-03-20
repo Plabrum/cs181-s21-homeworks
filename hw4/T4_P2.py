@@ -4,15 +4,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-sns.set_style(style="whitegrid")
+from scipy.spatial.distance import cdist
+# sns.set_style(style="whitegrid")
 
 # This line loads the images for you. Don't change it!
 # pics = np.load("data/images.npy", allow_pickle=False)
 small_dataset = np.load("data/small_dataset.npy")
 # small_labels = np.load("../data/small_dataset_labels.npy").astype(int)
 large_dataset = np.load("data/large_dataset.npy")
-
-print(large_dataset.shape)
 
 # You are welcome to change anything below this line. This is just an example of how your code may look.
 # Keep in mind you may add more public methods for things like the visualization.
@@ -108,27 +107,176 @@ class KMeans(object):
     def get_mean_images(self):
         return self.mu
 
-KMeansClassifier = KMeans(K=10)
-KMeansClassifier.fit(large_dataset)
+# gets images in right order
+def reshuffle(arr):
+    nw = []
+    for a,b,c in zip(arr[:10], arr[10:20], arr[20:30]):
+        nw.append(a)
+        nw.append(b)
+        nw.append(c)
+    return nw
 
-fig, ax = plt.subplots()
-ax.plot(np.array(KMeansClassifier.loss_list));
-ax.set_ylabel('Loss', fontsize=15)
-ax.set_xlabel('Iterations', fontsize=15)
-ax.set_title('K-means objective function', fontsize=20)
-plt.show()
+def p2_1():
+    KMeansClassifier = KMeans(K=10)
+    KMeansClassifier.fit(large_dataset)
 
-# This is how to plot an image. We ask that any images in your writeup be grayscale images, just as in this example.
-plt.figure()
-plt.imshow(KMeansClassifier.mu[0].reshape(28,28), cmap='Greys_r')
-plt.show()
+    fig, ax = plt.subplots()
+    ax.plot(np.array(KMeansClassifier.loss_list));
+    ax.set_ylabel('Loss', fontsize=15)
+    ax.set_xlabel('Iterations', fontsize=15)
+    ax.set_title('K-means objective function', fontsize=20)
+    plt.show()
+
+    # This is how to plot an image. We ask that any images in your writeup be grayscale images, just as in this example.
+    # plt.figure()
+    # plt.imshow(KMeansClassifier.mu[0].reshape(28,28), cmap='Greys_r')
+    # plt.show()
+
+save_kmcs = []
+
+def p2_2():
+    for k in [5,10,20]:
+        for restart in range(5):
+            KMC = KMeans(K=k)
+            KMC.fit(large_dataset)
+            save_kmcs.append(KMC)
+            print("Converged1!")
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+
+    los = np.array(lossls).reshape(3,5)
+    klis = [5,10,20]
+
+    for num,ls in enumerate(los):
+        x = klis[num]
+        stdev = np.std(ls)
+        for y in ls:
+    #         ax.scatter(x, y, color='b', marker="x")
+            plt.errorbar(x, y, yerr=stdev, color='b', fmt='x')
+        
+    ax.set_ylabel('Loss', fontsize=15)
+    ax.set_xlabel('K Values', fontsize=15)
+    ax.set_title('K-means objective value for K=5,10,20', fontsize=20)
+    plt.show()
+
+def p2_3():
+    imgs= []
+    for kmc in save_kmcs:
+        for img in kmc.mu:
+            imgs.append(img)
+    w = 28
+    h = 28
+    fig = plt.figure(figsize=(9, 26))
+    columns = 3
+    rows = 10
+    # ax enables access to manipulate each of subplots
+    ax = []
+    for i in range(columns*rows):
+        img = imgs[i].reshape(28,28)
+        ax.append( fig.add_subplot(rows, columns, i+1) )
+        plt.imshow(img, cmap='Greys_r')
+
+    plt.show()  # finally, render the plot
+
+def p2_4():
+    avrg = np.sum(large_dataset, axis=0)/large_dataset.shape[1]
+    norm = np.array([av if av != 0 else 1 for av in avrg])
+    normalized = large_dataset/norm
+
+    save_kmcs = []
+    k = 10
+    for restart in range(3):
+        KMC = KMeans(K=k)
+        KMC.fit(normalized)
+        save_kmcs.append(KMC)
+        print("Converged!")
+    imgs= []
+    for kmc in save_kmcs:
+        for img in kmc.mu:
+            imgs.append(img)
+
+    w = 28
+    h = 28
+    fig = plt.figure(figsize=(9, 26))
+    columns = 3
+    rows = 10
+    # ax enables access to manipulate each of subplots
+    ax = []
+    for i in range(columns*rows):
+        img = imgs[i].reshape(28,28)
+        ax.append( fig.add_subplot(rows, columns, i+1) )
+        plt.imshow(img, cmap='Greys_r')
+
+    plt.show()  # finally, render the plot
 
 
 class HAC(object):
-	def __init__(self, linkage):
-		self.linkage = linkage
+    def __init__(self, linkage):
+        self.linkage = linkage
+        
+    def fit(self, dataset):
+        cll = [point.reshape(1,-1) for point in dataset]
+
+        while len(cll) > 10:
+            l = len(cll)
+            min_i, min_i = 0, 0
+            minimum_distance = np.inf
+            
+            # Find the i and j of the closest two clusters
+            for i in range(l):
+                for j in range(l):
+                    if i == j:
+                        continue
+                    dist = self.linkage(cll[i],cll[j])
+                    if dist < minimum_distance:
+                        # found a closer cluster
+                        minimum_distance = dist
+                        min_i, min_j = i, j
+
+            # print("merging:", min_i,min_j)
+            cll[min_i] = np.concatenate((cll[min_i], cll.pop(min_j)), axis=0)
+            print("list length", len(cll))
+
+        return [np.sum(cl, axis=0)/len(cl) for cl in cll]
+
+def min_link(cl1, cl2):
+    return np.max(cdist(cl1, cl2))
+
+def max_link(cl1, cl2):
+    return np.min(cdist(cl1, cl2))
+
+def ce_link(cl1, cl2):
+    a = np.sum(cl1, axis=0).reshape(1,-1) / len(cl1)
+    b = np.sum(cl2, axis=0).reshape(1,-1) / len(cl1)
+    return cdist(a, b)[0][0]
 
 
+def p2_5_disp(imgs):
+    w = 28
+    h = 28
+    fig = plt.figure(figsize=(9, 26))
+    columns = 3
+    rows = 10
+    # ax enables access to manipulate each of subplots
+    ax = []
+    for i in range(columns*rows):
+        img = imgs[i].reshape(28,28)
+        ax.append( fig.add_subplot(rows, columns, i+1) )
+        plt.imshow(img, cmap='Greys_r')
+    plt.show()  # finally, render the plot
 
+def p2_5():
 
+    ml_hac = HAC(min_link)
+    ml_mus = ml_hac.fit(small_dataset)
+
+    ma_hac = HAC(max_link)
+    ma_mus = ma_hac.fit(small_dataset)
+
+    av_hac = HAC(av_link)
+    av_mus = av_hac.fit(small_dataset)
+
+    p2_5_disp(reshuffle(ml_mus + ma_mus + av_mus))
+
+p2_5()
 
