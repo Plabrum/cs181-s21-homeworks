@@ -266,7 +266,7 @@ The code in \texttt{T4\_P2.py} loads the images into your environment into two a
     Each column represents a new restart, initialised using random values. Each row represents the mean value of a cluster. You can see each of the mean values roughly equaling a different underlying true value (i.e. they are somewhat displaying each of the 10 digits).
     
     \begin{figure}[H]
-        \includegraphics[height=20cm]{hw4/img/p2_3.png}
+        \includegraphics[height=18cm]{hw4/img/p2_3.png}
         \centering
     \end{figure}
     
@@ -276,7 +276,34 @@ The code in \texttt{T4\_P2.py} loads the images into your environment into two a
     As all the images are standardised, only the bits of a datapoint that are different to the majority of other images remain. The centroids now are picking up the most common outlier pixels.
     
     \begin{figure}[H]
-        \includegraphics[height=20cm]{hw4/img/p2_4.png}
+        \includegraphics[height=18cm]{hw4/img/p2_4.png}
+        \centering
+    \end{figure}
+    
+    \newpage 
+    \item \textbf{ Implement HAC for min, max, and centroid-based linkages. Fit these models to the small dataset.For each of these 3 linkage criteria, find the mean image for each cluster when using 10 clusters.Display these images (30 total) on a single plot.}
+    
+    HAC implementations for Min, Max and Centroid-based linkages. Each column represents the linkage type used, and each row represents the average (mean) image for each cluster. These images seems to be much sharper for the max and centroid based linkages and very fuzzy for the min linkages in comparison to the K-means images. The K-means generates a much more generalised average representation of a class whereas the HAC seems to pull out certain unique details.
+    
+    \begin{figure}[H]
+        \includegraphics[height=17cm]{hw4/img/p2_5.png}
+        \centering
+    \end{figure}
+    
+    \item \textbf{For each of the 3 HAC linkages (max/min/centroid), plot "Distance between most recently mergedclusters" (y-axis) v.  "Total number of merges completed" (x-axis).}
+    
+    
+    
+    \begin{figure}[H]
+        \includegraphics[width=6cm]{hw4/img/p2_6a.png}
+        \centering
+    \end{figure}
+    \begin{figure}[H]
+        \includegraphics[width=6cm]{hw4/img/p2_6b.png}
+        \centering
+    \end{figure}
+    \begin{figure}[H]
+        \includegraphics[width=6cm]{hw4/img/p2_6c.png}
         \centering
     \end{figure}
     
