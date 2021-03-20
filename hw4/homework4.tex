@@ -132,7 +132,7 @@ the questions below when composing your answers, and to justify each step.
     
     First, we know that at the boundary, $W\Phi(x) + w_0 = 0$, we also know that our $W$ and the vector $\vec{V} = [0,1]$ are orthogonal to the decision boundary. Therefore, we know $W \propto V$, as we can set $W = [w_a, w_b]$ we can use $\vec{V}$ to say that $W = [0, w_b]$.
     
-    Let's look at the case where $y=-1$, here $\Phi(x) = -1$. By using our value of $W$ from before we can now write: $w_b(-1) + w_0 = 0$ for a point at the decision boundary.
+    Let's look at the case where we are at the boundary, here $\Phi(x)_2 = -1$. By using our value of $W$ from before we can now write: $w_b(-1) + w_0 = 0$ for a point at the decision boundary.
     
     \begin{align*}
         w_b &= w_0 \\
@@ -149,10 +149,10 @@ the questions below when composing your answers, and to justify each step.
         \min_{\mathbf{w}, w_0} \frac{1}{2}\|\mathbf{w}\|_2^2 \quad \text{s.t.} \quad & y_i(\mathbf{w}^\top \bphi(x_i) + w_0) \geq 1,~\forall i \in \{1,\ldots, n\}
     \end{align*}
     
-    We can simplify the optimisation to only work over the $w_0$ from part 4, $x_{2i}$ represents the $i^{th}$ element of x in the second row (i.e. only those transformed by the basis function). 
+    We can simplify the optimisation to only work over the $w_0$ from part 4, $\bphi(x_{i})_2$ represents the $i^{th}$ element of x in the second row (i.e. only those transformed by the basis function). 
     \begin{align*}
-        &\min_{\mathbf{w_0}} \mathbf{w_0} \quad \text{s.t.} \quad & y_i(w_0 \bphi(x_{2i}) + w_0) \geq 1,~\forall i \in \{1,\ldots, n\} \\
-        &= \min_{\mathbf{w_0}} \mathbf{w_0} \quad \text{s.t.} \quad & y_i w_0 ( \bphi(x_{2i}) + 1) \geq 1,~\forall i \in \{1,\ldots, n\} \\
+        &\min_{\mathbf{w_0}} \mathbf{w_0} \quad \text{s.t.} \quad & y_i(w_0 \bphi(x_{i})_2 + w_0) \geq 1,~\forall i \in \{1,\ldots, n\} \\
+        &= \min_{\mathbf{w_0}} \mathbf{w_0} \quad \text{s.t.} \quad & y_i w_0 ( \bphi(x_{i})_2 + 1) \geq 1,~\forall i \in \{1,\ldots, n\} \\
     \end{align*}
     
     Using the points from the graph above, we can see that the minimum $w_0$ that satisfies is at 1, $\therefore \quad w = [0,1]$. 
@@ -163,7 +163,7 @@ the questions below when composing your answers, and to justify each step.
     
     \begin{align*}
         h(\bphi(x);\boldw,w_0) &= \boldw^\top\bphi(x) +w_0\\
-        h(\bphi(x);\boldw,w_0) &= 1\bphi(x_2) + 1 \\
+        h(\bphi(x);\boldw,w_0) &= 1\bphi(x)_2 + 1 \\
         h(\bphi(x);\boldw,w_0) &= \frac{-3}{8}x^2 + \frac{2}{3} x^4 + 1 \\
     \end{align*}
     
@@ -177,10 +177,7 @@ the questions below when composing your answers, and to justify each step.
         -1(\frac{-3}{8}(1)^2 + \frac{2}{3} (1)^4 + 1) &= 1 \\
         1(\frac{-3}{8}(2)^2 + \frac{2}{3} (2)^4 + 1) &= 1 \\
     \end{align*}
-   
 \end{enumerate}
-
-\newpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 2
@@ -251,12 +248,41 @@ The code in \texttt{T4\_P2.py} loads the images into your environment into two a
     
     Starting at a random initialisation, we can see the loss decreasing steadily with epoch, the graph is monotonic and the loss never increases at any point.
     \begin{figure}[H]
-        \includegraphics[width=10cm]{hw4/img/p3_1.png}
+        \includegraphics[width=8cm]{hw4/img/p2_1.png}
         \centering
     \end{figure}
+    
+    \item \textbf{Run  K-means  for  5  different  restarts  for  different  values  of K=  5,10,20.   Make  a  plot  of  the final K-means objective value after your algorithm converges (y-axis) v.  the values of K (x-axis),with each data point having an error bar.}
+    
+    The standard deviation of each K is plotted as vertical error bars, the plot of the loss at each K is represented by an X mark.
+    \begin{figure}[H]
+        \includegraphics[width=8cm]{hw4/img/p2_2.png}
+        \centering
+    \end{figure}
+    
+    \newpage
+    \item \textbf{ ForK= 10 and for 3 random restarts, show the mean image (aka the centroid) for each cluster.}
+    
+    Each column represents a new restart, initialised using random values. Each row represents the mean value of a cluster. You can see each of the mean values roughly equaling a different underlying true value (i.e. they are somewhat displaying each of the 10 digits).
+    
+    \begin{figure}[H]
+        \includegraphics[height=20cm]{hw4/img/p2_3.png}
+        \centering
+    \end{figure}
+    
+    \newpage
+    \item \textbf{Repeat Part 3, but before running K-means, standardize or center the data such that each pixel has mean 0 and variance 1.}
+    
+    As all the images are standardised, only the bits of a datapoint that are different to the majority of other images remain. The centroids now are picking up the most common outlier pixels.
+    
+    \begin{figure}[H]
+        \includegraphics[height=20cm]{hw4/img/p2_4.png}
+        \centering
+    \end{figure}
+    
+    
+    
 \end{enumerate}
-
-\newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 3
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
