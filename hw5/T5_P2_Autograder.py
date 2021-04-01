@@ -51,10 +51,12 @@ def check_student_solution(num_leading_components=500):
         student_cum_var = np.array(student_cum_var)
 
     # check that student cumulative variance has correct number of leading components
+    # print("given shape:", student_cum_var.shape)
     if student_cum_var.shape != (500,):
         raise ValueError(f'Student cumulative variance has wrong shape. Correct shape is (500,)')
 
     # assert that student cumulative variance matches expected cumulative variance
+    # print("my list: ", student_cum_var[:10], "theirs:", expected_cum_var[:10])
     assert np.allclose(student_cum_var, expected_cum_var, atol=1e-4)
 
     print("All test cases passed")

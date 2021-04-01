@@ -44,7 +44,7 @@ class EM_Geometric(object):
         start_time = time.time()
 
         # Initialize the soft cluster assignments q for each data point to each label
-        self.q = np.asmatrix(np.empty((len(self.data), self.num_clusters), dtype=float))
+        self.q = np.asarray(np.empty((len(self.data), self.num_clusters), dtype=float))
 
         num_iters = 0
 
@@ -74,6 +74,10 @@ class EM_Geometric(object):
         self.probs = np.sort(self.probs)
         self.q = self.q[:, i]
 
+    def pmf(self, x, p):
+        # each x for a given n, each p for a given k
+        return np.power((1-p), x - 1)*p
+
     def loglikelihood(self):
         '''
         Calculate the current log-likelihood given data and soft assignments
@@ -83,22 +87,36 @@ class EM_Geometric(object):
         ll : float
             The log-likelihood of current set of labels (according to a geometric distribution)
         '''
-        # TODO: Implement the log-likelihood function
-        pass
+
+        N, K = self.q.shape
+        
+        loss_list = []
+        for n in range(N):
+            for k in range(K):
+                loss_list.append( self.q[n][k] * np.log(self.pmf(self.data[n],self.probs[k]) * self.pis[k]) )
+
+        return sum(loss_list)
 
     def e_step(self):
         '''
         Run the expectation step, calculating the soft assignments based on current parameter estimates
         '''
-        # TODO: Implement the expectation step
-        pass
+        N, K = self.q.shape
+        for n in range(N):
+            row = np.array([self.pmf(self.data[n], self.probs[k])*self.pis[k] for k in range(K)])
+            self.q[n] = row/np.sum(row)
+            assert(np.round(np.sum(self.q[n]), 2) == 1.0)
+        
+        # print("sum of qs: ", np.sum(self.q, axis=1))
 
     def m_step(self):
         '''
         Run the maximization step, calculating parameter estimates based on current soft assignments
         '''
-        # TODO: Implement the maximization step
-        pass
+        self.pis = np.sum(self.q, axis=0) / len(self.q)
+        self.probs = (np.sum(self.q, axis=0) / np.dot(self.q.T, self.data)).flatten()
+        print("sum of probs:", np.sum(self.probs))
+        # assert(np.round(np.sum(self.probs), 2) == 1.0)
 
     def get_labels(self):
         '''
@@ -119,7 +137,7 @@ def generate_geom_data(num_data, cluster_probs):
 
 def main():
     # TODO: Toggle these between 10 / 1000 and [0.1, 0.5, 0.9] / [0.1, 0.2, 0.9]
-    num_data = 10
+    num_data = 1000
     cluster_probs = [0.1, 0.5, 0.9]
 
     # Do not edit the below code, it is to help you run the algorithm

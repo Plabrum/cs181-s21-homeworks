@@ -3,8 +3,24 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def get_cumul_var(mnist_pics,
-                  num_leading_components=500):
+### Helper Funcs ###
+
+def draw(img):
+    plt.figure()
+    plt.imshow(img.reshape(28,28), cmap='Greys_r')
+
+def plot_vals(ls, xl, yl, t):
+    font = {'color':  'darkblue', 'size': 16}
+    plt.title(t, fontdict=font)
+    plt.xlabel(xl, fontdict=font)
+    plt.ylabel(yl, fontdict=font)
+    plt.plot(ls)
+
+# Lists for storing values for images
+pc_list = []
+v_list = []
+
+def get_cumul_var(mnist_pics, num_leading_components=500):
 
     """
     Perform PCA on mnist_pics and return cumulative fraction of variance
@@ -26,14 +42,29 @@ def get_cumul_var(mnist_pics,
         num_leading_components, int:
             The variable representing k, the number of PCA components to use.
     """
+    
+    S = np.cov(mnist_pics.T)
+    values, vectors = np.linalg.eig(S)
 
-    # TODO: compute PCA on input mnist_pics
+    value_list = list(values.real)
+    vector_list = list(vectors.T.real)
+    
+    # reset the lists (for autograder check)
+    pc_list = []
+    v_list = []
 
-    # TODO: return a (num_leading_components, ) numpy array with the cumulative
-    # fraction of variance for the leading k components
-    ret = np.zeros(num_leading_components)
+    for _ in range(num_leading_components):
+        # Find the position of the  max eigen value
+        max_pos = np.argmax(value_list)
 
-    return ret
+        # Save the eigenvalue and eigenvector
+        pc_list.append(vector_list[max_pos].real)
+        v_list.append(value_list[max_pos].real)
+
+        del value_list[max_pos]
+        del vector_list[max_pos]
+
+    return np.cumsum(v_list) / np.sum(v_list)
 
 # Load MNIST.
 mnist_pics = np.load("data/images.npy")
@@ -48,9 +79,20 @@ cum_var = get_cumul_var(
     mnist_pics=mnist_pics,
     num_leading_components=num_leading_components)
 
-# Example of how to plot an image.
-plt.figure()
-plt.imshow(mnist_pics[0].reshape(28,28), cmap='Greys_r')
-plt.show()
+def p2_1():
+    # Plot the values for the 500 most signifigant aigenvectors in order from most signifgant to least
+    plot_vals(v_list, t="500 most signifigant Values", yl="Eigenvalues", xl="Signifigance")
+    plt.show()
+    plot_vals(cum_var, t="Cumulative Variance", yl="Variance", xl="500 most signifigant components")
+    plt.show()
+    print("Variance explained by the first 500 images:", cum_var[-1])
 
+def p2_2():
+    avrg_val = np.sum(mnist_pics, axis=0)/len(mnist_pics)
+    draw(avrg_val)
+    for i in range(10):
+        draw(pc_list[i])
+    plt.show()
 
+# p2_1()
+# p2_2()
