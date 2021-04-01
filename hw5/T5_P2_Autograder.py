@@ -56,7 +56,7 @@ def check_student_solution(num_leading_components=500):
         raise ValueError(f'Student cumulative variance has wrong shape. Correct shape is (500,)')
 
     # assert that student cumulative variance matches expected cumulative variance
-    # print("my list: ", student_cum_var[:10], "theirs:", expected_cum_var[:10])
+    print("my list: ", student_cum_var[:10], "theirs:", expected_cum_var[:10])
     assert np.allclose(student_cum_var, expected_cum_var, atol=1e-4)
 
     print("All test cases passed")

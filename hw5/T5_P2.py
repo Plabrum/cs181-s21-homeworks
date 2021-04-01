@@ -3,19 +3,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-### Helper Funcs ###
-
-def draw(img):
-    plt.figure()
-    plt.imshow(img.reshape(28,28), cmap='Greys_r')
-
-def plot_vals(ls, xl, yl, t):
-    font = {'color':  'darkblue', 'size': 16}
-    plt.title(t, fontdict=font)
-    plt.xlabel(xl, fontdict=font)
-    plt.ylabel(yl, fontdict=font)
-    plt.plot(ls)
-
 # Lists for storing values for images
 pc_list = []
 v_list = []
@@ -42,16 +29,15 @@ def get_cumul_var(mnist_pics, num_leading_components=500):
         num_leading_components, int:
             The variable representing k, the number of PCA components to use.
     """
-    
+    # Standardize
+    mnist_pics = (mnist_pics - np.mean(mnist_pics))/ np.std(mnist_pics)
+    # mnist_pics = (mnist_pics - np.mean(mnist_pics))
+ 
     S = np.cov(mnist_pics.T)
     values, vectors = np.linalg.eig(S)
 
     value_list = list(values.real)
     vector_list = list(vectors.T.real)
-    
-    # reset the lists (for autograder check)
-    pc_list = []
-    v_list = []
 
     for _ in range(num_leading_components):
         # Find the position of the  max eigen value
@@ -66,33 +52,68 @@ def get_cumul_var(mnist_pics, num_leading_components=500):
 
     return np.cumsum(v_list) / np.sum(v_list)
 
-# Load MNIST.
-mnist_pics = np.load("data/images.npy")
-
-# Reshape mnist_pics to be a 2D numpy array.
-num_images, height, width = mnist_pics.shape
-mnist_pics = np.reshape(mnist_pics, newshape=(num_images, height * width))
-
-num_leading_components = 500
-
-cum_var = get_cumul_var(
-    mnist_pics=mnist_pics,
-    num_leading_components=num_leading_components)
 
 def p2_1():
+    def plot_vals(ls, xl, yl, t):
+        font = {'color':  'darkblue'}
+        plt.title(t, fontdict=font)
+        plt.xlabel(xl, fontdict=font)
+        plt.ylabel(yl, fontdict=font)
+        plt.plot(ls)
+
     # Plot the values for the 500 most signifigant aigenvectors in order from most signifgant to least
     plot_vals(v_list, t="500 most signifigant Values", yl="Eigenvalues", xl="Signifigance")
+    plt.tight_layout()
+    plt.savefig("plots/2_1a.png")
     plt.show()
+
     plot_vals(cum_var, t="Cumulative Variance", yl="Variance", xl="500 most signifigant components")
+    plt.tight_layout()
+    plt.savefig("plots/2_1b.png")
     plt.show()
     print("Variance explained by the first 500 images:", cum_var[-1])
 
 def p2_2():
+    columns, rows = 2, 5
+    
+    # Plot mean value
+    plt.figure()
+    plt.title("Mean image of the dataset")
     avrg_val = np.sum(mnist_pics, axis=0)/len(mnist_pics)
-    draw(avrg_val)
-    for i in range(10):
-        draw(pc_list[i])
+    plt.imshow(avrg_val.reshape(28,28), cmap='Greys_r')
+    plt.savefig("plots/2_2a.png")
     plt.show()
 
-# p2_1()
-# p2_2()
+    fig = plt.figure(figsize=(5, 11))
+    plt.tight_layout()
+    ax = []
+    fig.suptitle("First 10 Principle Componenets")
+    # Plot subplot of prinicpal componenets
+    for i in range(columns*rows):
+        # create subplot and append to ax
+        ax.append( fig.add_subplot(rows, columns, i+1) )
+        ax[-1].set_title("Principal Component:"+str(i), fontsize="10")  # set title
+        plt.imshow(pc_list[i].reshape(28,28), cmap='Greys_r')
+    
+    plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[]);
+    # for i in range(10):
+    #     draw(pc_list[i])
+    plt.savefig("plots/2_2b.png")
+    plt.show()
+
+if __name__ == "__main__":
+    # Load MNIST.
+    mnist_pics = np.load("data/images.npy")
+
+    # Reshape mnist_pics to be a 2D numpy array.
+    num_images, height, width = mnist_pics.shape
+    mnist_pics = np.reshape(mnist_pics, newshape=(num_images, height * width))
+
+    num_leading_components = 500
+
+    cum_var = get_cumul_var(
+        mnist_pics=mnist_pics,
+        num_leading_components=num_leading_components)
+
+    p2_1()
+    p2_2()
