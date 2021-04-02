@@ -31,7 +31,7 @@ def get_cumul_var(mnist_pics, num_leading_components=500):
     """
     # Standardize
     # mnist_pics = (mnist_pics - np.mean(mnist_pics))/ np.std(mnist_pics)
-    mnist_pics = (mnist_pics - np.mean(mnist_pics))
+    mnist_pics = (mnist_pics - np.mean(mnist_pics, axis=0))
  
     S = np.cov(mnist_pics.T)
     values, vectors = np.linalg.eig(S)
@@ -44,8 +44,8 @@ def get_cumul_var(mnist_pics, num_leading_components=500):
         max_pos = np.argmax(value_list)
 
         # Save the eigenvalue and eigenvector
-        pc_list.append(vector_list[max_pos].real)
-        v_list.append(value_list[max_pos].real)
+        pc_list.append(vector_list[max_pos])
+        v_list.append(value_list[max_pos])
 
         del value_list[max_pos]
         del vector_list[max_pos]
@@ -84,6 +84,7 @@ def p2_2():
     plt.savefig("plots/2_2a.png")
     plt.show()
 
+    # plot PCAs
     fig = plt.figure(figsize=(11, 5))
     plt.tight_layout()
     ax = []
@@ -95,11 +96,12 @@ def p2_2():
         ax[-1].set_title("Principal Component:"+str(i), fontsize="10")  # set title
         plt.imshow(pc_list[i].reshape(28,28), cmap='Greys_r')
     
-    plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[]);
-    # for i in range(10):
-    #     draw(pc_list[i])
+    plt.setp(plt.gcf().get_axes(), xticks=[], yticks=[])
     plt.savefig("plots/2_2b.png")
     plt.show()
+
+def p2_3():
+    pass
 
 if __name__ == "__main__":
     # Load MNIST.
