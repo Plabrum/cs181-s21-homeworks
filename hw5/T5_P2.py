@@ -30,8 +30,8 @@ def get_cumul_var(mnist_pics, num_leading_components=500):
             The variable representing k, the number of PCA components to use.
     """
     # Standardize
-    mnist_pics = (mnist_pics - np.mean(mnist_pics))/ np.std(mnist_pics)
-    # mnist_pics = (mnist_pics - np.mean(mnist_pics))
+    # mnist_pics = (mnist_pics - np.mean(mnist_pics))/ np.std(mnist_pics)
+    mnist_pics = (mnist_pics - np.mean(mnist_pics))
  
     S = np.cov(mnist_pics.T)
     values, vectors = np.linalg.eig(S)
@@ -74,7 +74,7 @@ def p2_1():
     print("Variance explained by the first 500 images:", cum_var[-1])
 
 def p2_2():
-    columns, rows = 2, 5
+    columns, rows = 5, 2
     
     # Plot mean value
     plt.figure()
@@ -84,7 +84,7 @@ def p2_2():
     plt.savefig("plots/2_2a.png")
     plt.show()
 
-    fig = plt.figure(figsize=(5, 11))
+    fig = plt.figure(figsize=(11, 5))
     plt.tight_layout()
     ax = []
     fig.suptitle("First 10 Principle Componenets")
