@@ -251,25 +251,52 @@ The given code in \texttt{T5\_P2.py} loads the images into your environment.  Fi
 
 \textit{Include your plots in your PDF. There may be several plots for this problem, so feel free
 to take up multiple pages.}
-
-
-
-
-
-
 \end{problem}
 
-
+\newpage
 \subsection*{Solution 2:}
 \begin{enumerate}
     \item
     \begin{enumerate}
-        \item \textbf{Plot the Eigenvalues corresponding to the most significant 500 components in order from significant to least.}
+        \item 
+        \textbf{Plot the Eigenvalues corresponding to the most significant 500 components in order from significant to least.}
         \begin{figure}[H]
-            \includegraphics[height=18cm]{hw5/plots/p2_1a.png}
-        \centering
-    \end{figure}
+            \includegraphics[width=8cm]{hw5/plots/2_1a.png}
+            \centering
+        \end{figure}
+        
+        \item \textbf{Plot the the cumulative proportion of variance explained by the first k significant components.}
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw5/plots/2_1b.png}
+            \centering
+        \end{figure}
+        \item \textbf{How much variance is explained by the first 500 components, describe the relationship between variance and k?}\\
+        Looking at the graph, we can see that the relationship between the number of components and the variance in the model is logarithmic, with the graph approaching 1 as we near 500 principal components. The final value (i.e. the 500th) of the retained variance is $0.9999999999999993$ - practically all the variance. With only 100 principal components we are already explaining 90\% of the variation in the data. 
     \end{enumerate}
+    
+    \item 
+    \begin{enumerate}
+        \item \textbf{Plot the mean image of the dataset.}
+        \begin{figure}[H]
+            \includegraphics[width=8cm]{hw5/plots/2_2a.png}
+            \centering
+        \end{figure}
+        \item \textbf{Plot an image corresponding to the first 10 principal components.}
+        \begin{figure}[H]
+            \includegraphics[height=14cm]{hw5/plots/2_2b.png}
+            \centering
+        \end{figure}
+        \item \textbf{How do the principle component images compare to the k-means cluster center images?}\\
+        These images look different to the K-means images in the sense that they are not classifying the types of digits - in K-means the cluster centers largely looked like an average value of the elements of a given cluster so in the case of a cluster of the digit $8$ the result would be a blurry $8$. Instead, these principal components there are sharper corners and unique features. These unique features can be interpreted as the locations of differentiation between the classes, looking at principal component 8, you can see the highly angular features of a 4 or a 7 and a lack of the curves of a 0 or an 8.
+    \end{enumerate}
+    
+    \item 
+    \begin{enumerate}
+        \item \textbf{Compute the reconstruction error on the data set using the mean image.}
+        \item \textbf{Compute the reconstruction error on the first 10 components}
+        \item \textbf{How do these errors compare the final objective loss achieved by K-means?}
+    \end{enumerate}
+    
 \end{enumerate}
 
 \newpage
