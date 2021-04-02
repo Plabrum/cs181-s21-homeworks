@@ -23,6 +23,7 @@
 \usetikzlibrary{positioning,shapes,arrows}
 \usepackage{xifthen}
 \usepackage{soul}
+\usepackage{float}
 
 \usepackage[mmddyyyy,hhmmss]{datetime}
 
@@ -174,7 +175,44 @@ Using the~$\boldq_n$ estimates from the Expectation Step, derive an update for m
   
 \end{framed}  
 
-\subsection*{Solution}
+\subsection*{Solution 1}
+
+\begin{enumerate}
+    \item \textbf{Expand the data likelihood to include the necessary sums over the observations $x_n$.}
+    
+    $x_n ~ Geometric(P_{z_n})$\\
+    $p(x| z_n; \btheta) = $
+    
+    
+    \begin{align*}
+        p(x_n, \btheta, p_k) &= p(x_n | z_n = C_k) p(z_n = C_k) \\
+        &= p(x_n | z_n = C_k) \btheta_k \\
+        &= (1 - p_k)^{x_n - 1} p_k \btheta_k \\
+        \therefore \\
+        \log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1}) &=  \sum^n  \log [ \sum^k (1 - p_k)^{x_n - 1} p_k \btheta_k)]
+        % \sum_n^N \log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1}) &= \sum_n^N \log p(x_n; \btheta, \{p_k\}^K_{k = 1}) \\
+        % \log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1}) = 
+    \end{align*}
+    
+    \item 
+    \item \textbf{Complete-Data Log likelihood}
+    \begin{align*}
+        \mcL(\btheta, \{p_k\}^K_{k=1}) &=  -\ln p(D; \btheta, \{p_k\}^K_{k=1}) \\
+        -\ln p(D; \btheta, \{p_k\}^K_{k=1}) &= \log \sum^n \sum^k (1 - p_k)^{x_n - 1} p_k \btheta_k
+    \end{align*}
+    % \begin{enumerate}
+    %     \item A $q_n$ p(z_n = c_1)
+    %     we are given that z_n and x_n in the problem (what does geometric mean)
+    %     1. use bayes rule
+    %     2. plug in pdfs
+    %     3. normalize (divide by sum of components in q_n)
+    %     \item Concretre algorithm means give pseudocode
+    % \end{enumerate}
+    % \item 
+    % \begin{enumerate}
+    %     \item use our q_n to derive our (similar sections 8 notes)
+    % \end{enumerate}
+\end{enumerate}
 
 \newpage
 
@@ -222,7 +260,17 @@ to take up multiple pages.}
 \end{problem}
 
 
-\subsection*{Solution}
+\subsection*{Solution 2:}
+\begin{enumerate}
+    \item
+    \begin{enumerate}
+        \item \textbf{Plot the Eigenvalues corresponding to the most significant 500 components in order from significant to least.}
+        \begin{figure}[H]
+            \includegraphics[height=18cm]{hw5/plots/p2_1a.png}
+        \centering
+    \end{figure}
+    \end{enumerate}
+\end{enumerate}
 
 \newpage
 
