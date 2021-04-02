@@ -30,7 +30,6 @@ def get_cumul_var(mnist_pics, num_leading_components=500):
             The variable representing k, the number of PCA components to use.
     """
     # Standardize
-    # mnist_pics = (mnist_pics - np.mean(mnist_pics))/ np.std(mnist_pics)
     mnist_pics = (mnist_pics - np.mean(mnist_pics, axis=0))
  
     S = np.cov(mnist_pics.T)
@@ -100,8 +99,26 @@ def p2_2():
     plt.savefig("plots/2_2b.png")
     plt.show()
 
-def p2_3():
-    pass
+def p2_3(mnist_pics):
+    mnist_pics_shift = (mnist_pics - np.mean(mnist_pics, axis=0))
+    avrg_val = np.sum(mnist_pics, axis=0)/len(mnist_pics)
+    U = np.array(pc_list[:10])
+    rec_err_ls = []
+    mean_img_rec_err = []
+    for x in mnist_pics_shift:
+        #  rec err using average val
+        mean_img_rec_err.append(pow(np.linalg.norm(x - avrg_val),2))
+
+        # 10 principal componenets
+        proj = np.dot(U.T, np.dot(U, x))
+        l2 = np.linalg.norm(x - proj)
+        err = pow(l2, 2)
+        rec_err_ls.append(err)
+    
+    rec_err = sum(rec_err_ls)/len(rec_err_ls)
+    mean_rec_err = sum(mean_img_rec_err)/len(mean_img_rec_err)
+    
+    print("Mean Rec err:", mean_rec_err, "Rec Err:", rec_err)
 
 if __name__ == "__main__":
     # Load MNIST.
@@ -117,5 +134,6 @@ if __name__ == "__main__":
         mnist_pics=mnist_pics,
         num_leading_components=num_leading_components)
 
-    p2_1()
-    p2_2()
+    # p2_1()
+    # p2_2()
+    p2_3(mnist_pics)
