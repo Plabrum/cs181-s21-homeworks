@@ -25,6 +25,7 @@
 \usepackage{soul}
 \usepackage{float}
 
+
 \usepackage[mmddyyyy,hhmmss]{datetime}
 
 \definecolor{verbgray}{gray}{0.9}
@@ -180,38 +181,139 @@ Using the~$\boldq_n$ estimates from the Expectation Step, derive an update for m
 \begin{enumerate}
     \item \textbf{Expand the data likelihood to include the necessary sums over the observations $x_n$.}
     
-    $x_n ~ Geometric(P_{z_n})$\\
-    $p(x| z_n; \btheta) = $
-    
-    
     \begin{align*}
-        p(x_n, \btheta, p_k) &= p(x_n | z_n = C_k) p(z_n = C_k) \\
+        p(x_n, \btheta, p_k) &= p(x_n | z_n = C_k, \theta) p(z_n = C_k) \\
         &= p(x_n | z_n = C_k) \btheta_k \\
-        &= (1 - p_k)^{x_n - 1} p_k \btheta_k \\
-        \therefore \\
-        \log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1}) &=  \sum^n  \log [ \sum^k (1 - p_k)^{x_n - 1} p_k \btheta_k)]
-        % \sum_n^N \log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1}) &= \sum_n^N \log p(x_n; \btheta, \{p_k\}^K_{k = 1}) \\
-        % \log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1}) = 
+        \log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1}) &= \log [\prod^n \sum^k p(x_n| z_n = C_k) \btheta_k]\\
+        &=  \sum^n  \log [ \sum^k p(x_n| z_n = C_k) \btheta_k]
     \end{align*}
     
-    \item 
-    \item \textbf{Complete-Data Log likelihood}
+    This is intractable because there is a sum inside the log - this solution is not convex. Maximising over lambda and theta would have at least K unknowns. 
+    
+    \item \textbf{Complete-Data Log likelihood}\\
+    Using our answer from 1.1:
     \begin{align*}
         \mcL(\btheta, \{p_k\}^K_{k=1}) &=  -\ln p(D; \btheta, \{p_k\}^K_{k=1}) \\
-        -\ln p(D; \btheta, \{p_k\}^K_{k=1}) &= \log \sum^n \sum^k (1 - p_k)^{x_n - 1} p_k \btheta_k
+        -\ln p(D; \btheta, \{p_k\}^K_{k=1}) &= -\log \prod^n p(x_n| z_n = C_k) \btheta_k \\
+        &= - \sum^n \sum^k \log [  ( p(x_n| z_n = C_k) \btheta_k)^{z_{nk}} ] \\
+        \text{using log rules}\\
+        &= - \sum^n \sum^k z_{nk} \log  ( p(x_n| z_n = C_k) \btheta_k)\\
     \end{align*}
-    % \begin{enumerate}
-    %     \item A $q_n$ p(z_n = c_1)
-    %     we are given that z_n and x_n in the problem (what does geometric mean)
-    %     1. use bayes rule
-    %     2. plug in pdfs
-    %     3. normalize (divide by sum of components in q_n)
-    %     \item Concretre algorithm means give pseudocode
-    % \end{enumerate}
-    % \item 
-    % \begin{enumerate}
-    %     \item use our q_n to derive our (similar sections 8 notes)
-    % \end{enumerate}
+    This now makes the computation tractable for a given set of $z_n$ values, we no longer have to worry about taking the log of a sum of numbers - we only need to sum a computed log of out equation.
+    
+    \item \textbf{Expectation Step:}
+    \begin{enumerate}
+        \item \textbf{Write down and simplify the expression for $q_n$}
+        $q_n$ is the posterior over the hidden component variables. We can therefore find an expression for the $k_{th}$ value of each of the $q_n$.
+        $$
+            q_{nk} = p(z_n = C_k | x_n, \btheta, \{p_k\}^K_{k=1})
+        $$
+        Therefore we can write this as:
+        \begin{align*}
+            q_{nk} &= \frac{p(z_n = C_k | x_n, z, \theta)\btheta_k) }{\sum^K_{k=1} p(z_n = C_k | x_n, z, \theta)\btheta_k}\\
+            &= \frac{(1 - p_k)^{x_n - 1} p_k\btheta_k) }{\sum^K_{k=1} (1 - p_k)^{x_n - 1} p_k\btheta_k}
+        \end{align*}
+        
+        \item \textbf{Give a concrete algorithm for calculating $q_n$}\\
+        To make an algorithm for calculating each $q_n$ we can use the following protocol:\\
+        1. Compute the PMF and multiply it by the class probability ($\btheta_k$\\
+        2. Normalize the vector to make the probabilities sum to 1\\
+        
+        \textbf{This can be written in python as:}
+\begin{verbatim}
+row = np.array([self.pmf(self.data[n], self.probs[k])*self.pis[k] for k in range(K)])
+self.q[n] = row/np.sum(row)
+\end{verbatim}
+        
+    \end{enumerate}
+    \item \textbf{Maximisation step}
+    \begin{enumerate}
+        \item \textbf{Derive an expression for the expected complete-data log likelihood using $q_n$}\\
+        Using our answer from problem 1.2, we know that the log likelihood is:
+        $$\log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1}) = \sum^n \sum^k z_{nk} \log  ( p(x_n| z_n = C_k) \btheta_k)$$
+        We can now simplify taking advantage of the linearity of expectation to simplify.\\
+        \begin{align*}
+            \mathbb{E} [ \log p(\{x_n\}^N_{n=1}; \btheta, \{p_k\}^K_{k = 1})] &= \mathbb{E} [\sum^n \sum^k z_{nk} \log  ( p(x_n| z_n = C_k) \btheta_k)]\\
+            &= \sum^n \sum^k \mathbb{E} [z_{nk}  \log  ( p(x_n| z_n = C_k) \btheta_k)]\\
+        \end{align*}
+        
+        We can split the logs and distribute the Expectations, we can also use 1.3 and substitute in our values of $q_nk$ for the predicted class (i.e. expected values) of each $z_nk$\\
+        \begin{align*}
+            &= \sum^n \sum^k \mathbb{E} [z_{nk}  \log  ( p(x_n| z_n = C_k))] + \mathbb{E} [z_{nk}  \log( \btheta_k)]\\
+            &= \sum^n \sum^k \mathbb{E} [z_{nk}]  \log  ( p(x_n| z_n = C_k)) + \mathbb{E} [z_{nk}]  \log( \btheta_k)\\
+            &= \sum^n \sum^k q_{nk}  \log  ( p(x_n| z_n = C_k)) + q_{nk}  \log( \btheta_k)\\
+        \end{align*}
+        
+        \item \textbf{Derive an expression for $\btheta$ that maximises the log loss}
+        Here we can take the derivative of our loss function with respect to $\theta$ using Lagrange multipliers.
+        
+        \begin{align*}
+            \mcL(\btheta, \{p_k\}^K_{k=1}) &= \sum^n \sum^k q_{nk}  \log  ( p(x_n| z_n = C_k)) + q_{nk}  \log( \btheta_k) + \lambda (1 - \sum^k \btheta_k)\\
+        \end{align*}
+        
+        First we can take the partial derivative with respect to $\theta_k$:
+        
+        \begin{align*}
+            \frac{d(\mcL(\btheta))}{d(\btheta_k)} &= \sum^n \sum^k q_{nk} \frac{1}{\btheta_k} + \lambda(-\sum^k 1)\\
+            &= \sum^n \sum^k \frac{q_{nk}}{\btheta_k} + \lambda(-\sum^k 1) = 0 \\
+            \lambda &= \sum^n \frac{q_{n}}{\btheta_k}
+        \end{align*}
+        
+        Likewise we can now take the partial derivative of the loss with respect to $\lambda$:
+        
+        \begin{align*}
+            \frac{d(\mcL(\btheta))}{d(\lambda)} &= 1 - \sum^k \btheta_k\\
+            \sum^k \btheta_k = 1
+        \end{align*}
+        
+        Putting this together we can see:
+        \begin{align*}
+            \btheta_k = \frac{1}{N} \sum^n q_n\\
+        \end{align*}
+        This makes intuitive sense as we are finding the proportion of data points that exist for a given class - this is exactly what $\theta_k$ is representing, the probability of a given point existing in a given class.
+        \item \textbf{Find an expression for the $p_k$ that maximises the expected the complete-data log likelihood.}
+        First we can simplify and substitute in the PMF:
+        \begin{align*}
+            \mcL(\btheta, \{p_k\}^K_{k=1}) &= \sum^n \sum^k q_{nk}  \log  ( p(x_n| z_n = C_k)) + q_{nk}  \log( \btheta_k)\\
+            &= \sum^n \sum^k q_{nk}  \log  ( (1 - p_k)^{x_n - 1} p_k ) + q_{nk}  \log( \btheta_k)\\
+            &= \sum^n \sum^k q_{nk}  (x_n - 1)\log (1 - p_k) +\log(p_k) + q_{nk}  \log( \btheta_k)\\
+        \end{align*}
+        As before, we can take the derivative of our loss function with respect to $p_k$:
+        \begin{align*}
+            \frac{d(\mcL(\btheta))}{d(\btheta_k)} &= \sum^n \sum^k \frac{q_{nk}(x_n - 1)}{(1 - p_k)} +\frac{1}{p_k} = 0\\
+            p_k &= \frac{q_{nk}}{q_{nk} x_n}
+        \end{align*}
+        This makes intuitive sense as we are finding the number of x values in a given class divided by the sum of the x values for that class - thereby finding the geometric distribution parameters.
+    \end{enumerate}
+    \item \textbf{Could you reuse any of your derivations above to estimate the parameters of the new model?}\\
+    The derivations above can be reused, we now have the values of $z_n$ so we can predict the $\theta_k$ and $p_k$. 
+    We essentially would only have to repeat the "M - Step" of the algorithm, every time we would be using a $q_n$ we can substitute in $z_n$:
+    
+    \begin{align*}
+        p_k &= \frac{\sum^n z_{nk}}{\sum^n z_{nk} x_n}\\
+        \theta_k &= \frac{1}{N} \sum^n z_{nk}\\
+    \end{align*}
+   \item \textbf{Implement the model in \textit{T5\_P1.py}, what are the results?}\\
+   
+   When given 10 samples from 3 components with $p_1 = 0.1$, $p_2 = 0.5$, $p_3 = 0.9$, the model performs as follows:\\
+   \textbf{Accuracy}: $73.33\%$\\
+   \textbf{Probabilities}: $[0.05400968, 0.51898827, 0.77010694]$\\
+   
+   When given 1000 samples from 3 components with $p_1 = 0.1$, $p_2 = 0.5$, $p_3 = 0.9$, the model performs as follows:\\
+   \textbf{Accuracy}: $61.2\%$\\
+   \textbf{Probabilities}: $[0.09302592, 0.22965224, 0.7672521]$\\
+   
+   Now when changing $p2$:\\
+   When given 10 samples from 3 components with $p_1 = 0.1$, $p_2 = 0.2$, $p_3 = 0.9$, the model performs as follows:\\
+   \textbf{Accuracy}: $56.66\%$\\
+   \textbf{Probabilities}: $[0.1869832,  0.25130479, 0.72401298]$\\
+   
+   When given 1000 samples from 3 components with $p_1 = 0.1$, $p_2 = 0.2$, $p_3 = 0.9$, the model performs as follows:\\
+   \textbf{Accuracy}: $60.3\%$\\
+   \textbf{Probabilities}: $[0.11210157, 0.31694061, 0.95508395]$\\
+   
+   
+   Overall, the model performs very quickly over 10 samples and comparatively slower over 1000 samples, this is due to the log likelihoods taking longer to converge. The difference in performance between a $p_2=0.5$ vs a $p_2=0.2$ is due to there being a lower chance of seeing an outcome with a lower probability - (a longer time for a Heads or a success in our geometric distribution) - while the probabilities will converge with more trials, it is hard to see convergence for low probabilities over small trials as there are simply not enough results. The restarts allow us to see a trial where we have good and bad luck when approximating these probabilities.
 \end{enumerate}
 
 \newpage
@@ -283,7 +385,7 @@ to take up multiple pages.}
         \end{figure}
         \item \textbf{Plot an image corresponding to the first 10 principal components.}
         \begin{figure}[H]
-            \includegraphics[height=14cm]{hw5/plots/2_2b.png}
+            \includegraphics[width=18cm]{hw5/plots/2_2b.png}
             \centering
         \end{figure}
         \item \textbf{How do the principle component images compare to the k-means cluster center images?}\\
@@ -292,9 +394,12 @@ to take up multiple pages.}
     
     \item 
     \begin{enumerate}
-        \item \textbf{Compute the reconstruction error on the data set using the mean image.}
-        \item \textbf{Compute the reconstruction error on the first 10 components}
-        \item \textbf{How do these errors compare the final objective loss achieved by K-means?}
+        \item \textbf{Compute the reconstruction error on the data set using the mean image.}\\
+        The reconstruction error on the data set using the mean image is $5748048.794500034$.
+        \item \textbf{Compute the reconstruction error on the first 10 components}\\
+        The reconstruction error on the data set using the first 10 principal components is $1731315.3279392119$. Each data point was projected onto the 10 principal components and then projected back into the D dimensions.
+        \item \textbf{How do these errors compare the final objective loss achieved by K-means?}\\
+        The final objective loss by k-means are higher than the losses found here, we can see that as in the case with K-means, the more clusters and components we use, the lower the loss will be. It is intuitive that PCA will select 10 components that have a lower overall objective loss than K-mean as they are analytically found to describe the most amount of variance in the data - K-means has a degree of randomness determining the starting position of the cluster so it is likely that they will not find the optimal components. 
     \end{enumerate}
     
 \end{enumerate}
@@ -383,7 +488,37 @@ questions and show your work (i.e., state what the blocking path(s) is/are and w
 \end{problem}
 
 
-\section*{Solution}
+\section*{Solution 3}
+
+\begin{enumerate}
+    \item Yes. "Sick" and "weekend" are independent. Using D-separation rules, we can see that paths of sick and weekend are blocked. This makes sense as the day of the week would not affect if a person is sick.
+    \item No. "Sick" is not independent of "Friends over" given "Eat exotic foods". We can rewrite this as $\text{Sick} \rightarrow \text{Eat exotic foods} \leftarrow \text{Friends over}$ and see that it is on our network and not blocked as "Eat exotic foods" is observed. This makes sense as it is likely that if a person has friends over given that the ate exotic foods, it is likely that they are not sick.
+    \item No. "Friends over" is not independent of "Get sleep", there is a path through travelling and weekend. Intuitevly this makes sense as a person with friends over is less likely to get sleep. 
+    \item Yes. "Friends over" is independent of "Get sleep" when "Travelling" is observed. This is because observation of travelling blocks the path. Therefore, there is no path between "weekend" and "get sleep".
+    \item The new network will remove the path between "Travelling" and "Get sleep":
+    \begin{center}
+    \begin{tikzpicture}[
+      node distance=1cm and .5cm,
+      bn/.style={draw,ellipse,text width=2cm,align=center}
+        ]
+        \node[bn] (w) {\attr{Weekend}};
+        \node[bn,below right=of w] (t) {\attr{Traveling}};
+        \node[bn,right=of t] (s) {\attr{Sick}};
+        \node[bn,below left=of w] (f) {\attr{Friends over}};
+        \node[bn,below right=of f] (eef) {\attr{Eat exotic foods}};
+        \node[bn,right=of eef] (gs) {\attr{Get sleep}};
+        \path (w) edge[-latex] (t)
+        (w) edge[-latex] (f)
+        (f) edge[-latex] (eef)
+        (t) edge[-latex] (eef)
+        % (t) edge[-latex] (gs)
+        (s) edge[-latex] (gs)
+        (s) edge[-latex] (eef);
+        \end{tikzpicture}
+    \end{center}
+    
+    \item Yes. "Friends over" is now independent of "Get Sleep". However, the independence would be broken if "Eat exotic foods" is observed. This intuitively makes sense, because given information about "eat exotic foods", we would change the likelihood of "Sick" and therefore effect the likelihood of "get sleep" therefore showing no independence. 
+\end{enumerate}
 
 
 \newpage
@@ -391,11 +526,13 @@ questions and show your work (i.e., state what the blocking path(s) is/are and w
 % Name and Calibration
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection*{Name}
-
+Phil Labrum
 \subsection*{Collaborators and Resources}
-Whom did you work with, and did you use any resources beyond cs181-textbook and your notes?
+Natalie Margulies
+Thomas Maldonado
+Daniel Rodrigues
 
 \subsection*{Calibration}
-Approximately how long did this homework take you to complete (in hours)? 
+25 hours.
 
 \end{document}
