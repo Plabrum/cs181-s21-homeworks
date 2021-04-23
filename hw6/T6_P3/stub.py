@@ -4,10 +4,10 @@ import numpy.random as npr
 import pygame as pg
 
 # uncomment this for animation
-# from SwingyMonkey import SwingyMonkey
+from SwingyMonkey import SwingyMonkey
 
 # uncomment this for no animation
-from SwingyMonkeyNoAnimation import SwingyMonkey
+# from SwingyMonkeyNoAnimation import SwingyMonkey
 
 
 X_BINSIZE = 200
@@ -25,10 +25,24 @@ class Learner(object):
         self.last_state = None
         self.last_action = None
         self.last_reward = None
+        
+        # New values
+        self.epsilon = 0.001
+        # self.epsilon = 0.01
+        self.alpha = 0.1
+        self.gamma = 0.1
+        self.explore_count = 0
+        # End New Values
 
         # We initialize our Q-value grid that has an entry for each action and state.
         # (action, rel_x, rel_y)
         self.Q = np.zeros((2, X_SCREEN // X_BINSIZE, Y_SCREEN // Y_BINSIZE))
+
+    def is_new(self):
+        return np.array_equal(self.Q, np.zeros((2, X_SCREEN // X_BINSIZE, Y_SCREEN // Y_BINSIZE)))
+
+    def decay_epsilon(self, epoch_num, tot_epochs):
+        self.epsilon *= np.max(((tot_epochs-epoch_num)/ tot_epochs), 0)
 
     def reset(self):
         self.last_state = None
@@ -56,12 +70,47 @@ class Learner(object):
         # 1. Discretize 'state' to get your transformed 'current state' features.
         # 2. Perform the Q-Learning update using 'current state' and the 'last state'.
         # 3. Choose the next action using an epsilon-greedy policy.
+        
+        # Make adjustments if it's the first run - set position to 0,0 and randomly select option
+        def q(s, a):
+            return self.Q[a][s[0]][s[1]]
+    
+        def e_greedy_policy(s):
+            explore = (np.random.rand() < self.epsilon)
+            if explore:
+                print("chose to explore! count:", self.explore_count)
+                self.explore_count += 1
 
-        new_action = npr.rand() < 0.1
-        new_state = state
+            # if equal choose randomly
+            if q(s,0) == q(s,1):
+                action = np.random.randint(2)
+            else:
+                action = (np.argmax([q(s,0), q(s,1)]) + explore) % 2
+            return action
 
-        self.last_action = new_action
-        self.last_state = new_state
+        if type(self.last_state) == type(None):
+            s = (0,0)
+            a = 0
+            r = 0
+        else:
+            s = self.discretize_state(self.last_state)
+            a = self.last_action
+            r = self.last_reward
+    
+        s_prime = self.discretize_state(state)
+
+        # Update Q function
+        a_max = np.max([q(s_prime, a) for a in [0,1] ])
+
+        self.Q[a][s[0]][s[1]] = q(s,a) + self.alpha*(r + self.gamma*a_max - q(s,a))
+
+        a_prime = e_greedy_policy(s_prime)
+
+        # decay epsilon
+        self.epsilon *= 0.9
+
+        self.last_action = a_prime
+        self.last_state = state
 
         return self.last_action
 
@@ -89,23 +138,61 @@ def run_games(learner, hist, iters=100, t_len=100):
 
         # Save score history.
         hist.append(swing.score)
+        # learner.decay_epsilon(ii, iters)
 
         # Reset the state of the learner.
         learner.reset()
-    pg.quit()
+    # pg.quit()
     return
 
 
 if __name__ == '__main__':
-    # Select agent.
-    agent = Learner()
 
-    # Empty list to save history.
-    hist = []
+    def starter():
+        # Select agent.
+        agent = Learner()
 
-    # Run games. You can update t_len to be smaller to run it faster.
-    run_games(agent, hist, 100, 100)
-    print(hist)
+        # Empty list to save history.
+        hist = []
 
-    # Save history. 
-    np.save('hist', np.array(hist))
+        # Run games. You can update t_len to be smaller to run it faster.
+        run_games(agent, hist, 100, 1)
+        print("High score:", np.max(hist))
+        print(agent.epsilon)
+        print(hist)
+
+        # Save history. 
+        np.save('hist', np.array(hist))
+    
+    def find_best():
+        test = [0.001, 0.01, 0.1, 0.2]
+        best_test_score = 0
+        best_params = (1,1,1)
+        a_g_score = []
+        for e in [0.001]:
+            for a_count,a in enumerate(test):
+                for g_count, g in enumerate(test):
+                    pack_score = []
+                    for i in range(2):
+                        test_hist = []
+                        test_agent = Learner()
+                        test_agent.epsilon = e
+                        test_agent.alpha = a
+                        test_agent.gamma = g
+
+                        run_games(test_agent, test_hist, 100, 1)
+                        test_hist.sort(reverse=True)
+                        score = np.mean(test_hist[:4])
+                        
+                        pack_score.append(score)
+                    
+                    top_score = np.mean(pack_score)
+                    a_g_score.append([a_count, g_count, top_score])
+                    print(f"Trying epsilon:{e}, alpha:{a}, gamma:{g}, with score:{top_score}")
+                    if top_score > best_test_score:
+                        best_test_score = top_score
+                        best_params = (e,a,g)
+        print("best parameters:", best_params, "best test score", best_test_score)
+        np.save('a_g_score', np.array(a_g_score))
+    # find_best()
+    starter()
