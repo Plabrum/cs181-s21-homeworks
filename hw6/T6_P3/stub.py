@@ -173,7 +173,7 @@ if __name__ == '__main__':
             for a_count,a in enumerate(test):
                 for g_count, g in enumerate(test):
                     pack_score = []
-                    for i in range(2):
+                    for _ in range(2):
                         test_hist = []
                         test_agent = Learner()
                         test_agent.epsilon = e

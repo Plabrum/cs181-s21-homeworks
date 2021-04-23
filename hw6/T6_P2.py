@@ -90,7 +90,7 @@ def make_policy_plot(pi, iter_type = VALUE_ITER, iter_num = 0):
                 dx = -.5; dy = 0
             plt.arrow( col , row , dx , dy , shape='full', fc='w' , ec='gray' , lw=1., length_includes_head=True, head_width=.1 )
     plt.title( iter_type + ' Iteration, i = ' + str(iter_num) )
-    plt.savefig(iter_type + '_' + str(iter_num) + '.png')
+    plt.savefig("plots/" + iter_type + '_' + str(iter_num) + '.png')
     plt.show(block=True)
     # Save the plot to the local directory.
 
@@ -213,10 +213,26 @@ def policy_evaluation(pi, gamma, theta = 0.1):
     and get_reward in this file.  You do not need to calculate the transition
     probabilities yourself.
     """
-    # TODO: Complete this function.
+    # itinialise policy Pi
+    # Start policy evaluation
+    #   for each current Pi compute V^pi using one of 2 methods above
+    
     V = np.zeros(state_count)
+    change = 0
+    while True:
+        V_new = np.zeros(state_count)
+        for s in range(state_count):
+            # does pi need an int?
+            reward = get_reward(s, int(pi[s]))
+            # sum of all s that you can get to from 
+            summed_sprimes = np.sum([get_transition_prob(s, int(pi[s]), sprime)*V[sprime] for sprime in range(state_count)])
+            V_new[s] = reward + gamma*summed_sprimes
 
-    return V
+        change = np.max(np.abs(V - V_new))
+        if change <= theta:
+            return V_new
+        else:
+            V  = V_new
 
 def update_policy_iteration(V, pi, gamma, theta = 0.1):
     """
@@ -232,11 +248,28 @@ def update_policy_iteration(V, pi, gamma, theta = 0.1):
     is called multiple times in the for loop in the learn_strategy function
     at the end of the file.
     """
-    # TODO: Complete this function.
+    
     V_new = policy_evaluation(pi, gamma, theta)
     pi_new = np.zeros(state_count)
 
+    # for s in range(state_count):
+    #     a_vals = [0 for a in range(action_count)]
+    #     for a in range(action_count):
+    #         r = get_reward(s,a)
+    #         a_vals[a] = r + gamma*np.sum([get_transition_prob(s,a,s_new) for s_new in range(state_count)])
+    #     pi_new[s] = np.argmax(a_vals)
+    # return V_new, pi_new
+
+    def s_p(V_, s_, a_):
+        return np.sum([get_transition_prob(s_, a_, sprime)*V_[sprime] for sprime in range(state_count)])
+
+    for s in range(state_count):
+        pi_new[s] = np.argmax([get_reward(s,a) + gamma*s_p(V_new, s, a) for a in range(action_count)])
+            
     return V_new, pi_new
+
+
+
 
 def update_value_iteration(V, pi, gamma):
     """
@@ -256,6 +289,13 @@ def update_value_iteration(V, pi, gamma):
     V_new = np.zeros(state_count)
     pi_new = np.zeros(state_count)
 
+    def s_p(V, s, a):
+        return np.sum([get_transition_prob(s, a, sprime)*V[sprime] for sprime in range(state_count)])
+
+    for s in range(state_count):
+        pi_new[s] = np.argmax([get_reward(s,a) + gamma*s_p(V, s, a) for a in range(action_count)])
+        V_new[s] = np.max([get_reward(s,a) + gamma*s_p(V, s, a) for a in range(action_count)])
+
     return V_new, pi_new
 
 """
@@ -272,7 +312,7 @@ print_every: int
 ct: float
     The convergence tolerance used for policy or value iteration.
 """
-def learn_strategy(planning_type = VALUE_ITER, max_iter = 10, print_every = 5, ct = None):
+def learn_strategy(planning_type = VALUE_ITER, max_iter = 10, print_every = 5, ct = 0.01):
     # Loop over some number of episodes
     V = np.zeros(state_count)
     pi = np.zeros(state_count)
