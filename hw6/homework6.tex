@@ -276,25 +276,42 @@ Include a plot in your writeup of the learned value function and policy.
     
     \begin{figure}[H]
         \centering
-        \includegraphics[width=6cm]{hw6/plots/Policy_0.png}
-        \includegraphics[width=6cm]{hw6/plots/Policy_2.png}
+        \includegraphics[width=4cm]{hw6/plots/Policy_0.png}
+        \includegraphics[width=4cm]{hw6/plots/Policy_2.png}
+        \includegraphics[width=4cm]{hw6/plots/Policy_4.png}
+        \includegraphics[width=4cm]{hw6/plots/Policy_6.png}
     \end{figure}
     \begin{figure}[H]
-        \includegraphics[width=6cm]{hw6/plots/Policy_4.png}
-        \includegraphics[width=6cm]{hw6/plots/Policy_6.png}
-        \centering
-    \end{figure}
-    \begin{figure}[H]
-        \includegraphics[width=5cm]{hw6/plots/Policy_8.png}
+        \includegraphics[width=4cm]{hw6/plots/Policy_8.png}
         \centering
     \end{figure}
     
-    This policy took only 3 iterations to converge:
+    This policy took only 3 iterations to converge, this happened when the max changes between the value  function was lower than the theta value specified in the parameters.
     
     \begin{figure}[H]
-        \includegraphics[width=5cm]{hw6/plots/all/Policy_3.png}
+        \includegraphics[width=6cm]{hw6/plots/all/Policy_3.png}
         \centering
     \end{figure}
+    \newpage
+    \item \textbf{Implement update value function, perform 10 iterations and produce graph for every 2nd iteration}
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=4cm]{hw6/plots/Value_0.png}
+        \includegraphics[width=4cm]{hw6/plots/Value_2.png}
+        \includegraphics[width=4cm]{hw6/plots/Value_4.png}
+        \includegraphics[width=4cm]{hw6/plots/Value_6.png}
+    \end{figure}
+    \begin{figure}[H]
+        \includegraphics[width=4cm]{hw6/plots/Value_8.png}
+        \centering
+    \end{figure}
+    
+    When setting the convergence tolerance to 0.1, the policy evalutaion still converges at the 3rd step as above but the value iteration takes 22 steps to converge. The final learned value function and policy is:
+    \begin{figure}[H]
+        \includegraphics[width=6cm]{hw6/plots/all/ct/Value_22.png}
+        \centering
+    \end{figure}
+    
     
 \end{enumerate}
 
