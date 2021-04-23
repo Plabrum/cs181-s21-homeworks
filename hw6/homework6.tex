@@ -111,7 +111,88 @@ $$
 
 \end{problem}
 
-\textbf{Solution}
+\newpage
+\textbf{Solution 1:}
+\begin{enumerate}
+    \item \textbf{Draw the graphical model corresponding to the factorization of the joint distribution. Are R and S independent?}
+    We can start by drawing the graphical model of the join distribution.
+    
+    \begin{tikzpicture}[
+        node distance=1cm and .5cm,
+        bn/.style={draw,circle,text width=2cm,align=center}
+        ]
+        \node[bn] (r) {\attr{R}};
+        \node[bn,below right=1cm of r] (g) {\attr{G}};
+        \node[bn,right=2cm of r] (s) {\attr{S}};
+        \path (r) edge[-latex] (g)
+        (s) edge[-latex] (g);
+    \end{tikzpicture}
+    
+    We can now use D-separation rules to see that R and S are independent when G has not been observed.
+    \item \textbf{ You check on the sprinkler without checking on the rain or the grass.  What is the probability that the sprinkler is on?}
+    
+    As G has not been observed, R and S are independent so the probability of the sprinkler being on is $p(S = 1) = 0.5$.
+    
+    \item \textbf{You notice it is raining and check on the sprinkler without checking the grass. What is the probability that the sprinkler is on?}
+    
+    With grass unobserved, R and S are independent and the probability of the sprinkler being on is  $p(S = 1) = 0.5$.
+    
+    \item \textbf{You notice that the grass is wet and go to check on the sprinkler (without checking if it is raining). What is the probability that the sprinkler is on?}
+    
+    Now that the grass is observed R and S are no longer independent, therefore we are looking for 
+    
+    $$
+    p(S | G) = \frac{p(G|S)p(S)}{p(G)}
+    $$
+    
+    We can sum over all probabilities conditioned on rain to get:
+    \begin{align*}
+        p(G|S) &= p(G|R=1,S=1)p(R=1) + p(G|R=0,S=1)p(R=0) \\
+        &= (1)0.25 + (0.75)0.75 = 0.8125
+    \end{align*}
+    
+    We can now also find the total $p(G)$: 
+    
+    \begin{align*}
+        p(G) &= \sum_{i,j} p(G| R = i, S = i)p(R=i)p(S=i) \\
+        &= (0.75)(0.25)(0.5) + (0.75)(0.75)(0.5) + (1)(0.25)(0.5) = 0.5
+    \end{align*}
+    
+    Therefore, we can put this together to get 
+    
+    $$
+    p(S | G) = \frac{0.8125 \cdot 0.5}{0.5} = 0.8125
+    $$
+    
+    \item \textbf{You notice that it is raining and the grass is wet. You go check on the sprinkler.  What is the probability that the sprinkler is on?}
+    
+    Here we are looking for: 
+    $$
+        p(S=1 | G = 1, R = 1) = \frac{p(G=1 | S=1, R = 1)p(S=1)}{p(G=1|R=1)}
+    $$
+    
+    We can now find the join probability of the grass being wet and it raining:
+    
+    \begin{align*}
+        p(G=1| R=1) &= p(G|R=1,S=1)p(S=1) + p(G|R=1,S=0)p(S=0)\\
+        &= (1)(0.5) + (0.75)(0.5)\\
+        &= 0.875
+    \end{align*}
+    
+    Now we can substitute that into our earlier equation:
+    
+    \begin{align*}
+        p(S=1 | G = 1, R = 1) &= \frac{p(G=1 | S=1, R = 1)p(S=1)}{p(G|R)} \\
+        &= \frac{(1)(0.5)}{0.875} =  0.5714286\\
+    \end{align*}
+    
+    
+    \item \textbf{What is Explaining away?}
+    
+    Here, explaining away refers to the effect of reducing the value of conditional probability with the addition of extra information on our condition. We can see that above as the probability of the sprinkler being on given the grass is wet and raining $p(S | G,R)$ is less that the probability of the sprinkler being on given that the grass is wet $P(S|G)$ - we essentially 'explain away' the fact that the grass is wet with our knowledge that it's raining. Intuitively this makes sense as the value of knowing whether the grass is wet is reduced if it also happens to be raining.
+    
+    
+\end{enumerate}
 
 \begin{problem}[Policy and Value Iteration, 15 pts]
 
@@ -187,7 +268,10 @@ Include a plot in your writeup of the learned value function and policy.
 \item[3.]  Compare the convergence and runtime of both policy iteration and value iteration.  What did you find?
 \end{itemize}
 \end{framed}
-\textbf{Solution}
+\newpage
+\textbf{Solution 2}
+
+
 
 
 
@@ -241,8 +325,63 @@ discount rate $\gamma$, and exploraton rate $\epsilon$. \emph{Do not use outside
     }
     \caption{(a) Screenshot of the Swingy Monkey game.  (b) Interpretations of various pieces of the state dictionary.}
 \end{figure}
-    
-\textbf{Solution}
+
+\newpage
+\textbf{Solution 3}
+
+In this problem, I used Q-Learning to train my agent. At first the performance of my agent was quite poor (only around 25-30) so I used a grid search to tune my hyper parameters. I chose to evaluate the performance of my hyperparameters by taking the mean of the top 3 scores across 2 iterations of the same set of hyperparameters. I chose to use this mean values so as to ensure that my agent was learning and not just getting "lucky". This proved to be a good evaluation and enabled me to settle on the following hyperparameters:
+
+\begin{align*}
+    \alpha &= 0.1\\
+    \gamma &= 0.1 \\
+    \epsilon &= 0.001
+\end{align*}
+
+\begin{figure}[H]
+    \includegraphics[width=10cm]{hw6/T6_P3/plots/p3_b.png}
+    \centering
+    \caption{Plot of game performance across the learning epochs with a fixed epsilon value of 0.001}
+\end{figure}
+
+This plot allows us to see how the agent performs across learning steps, throughout each stage the values of the Q function are tuned to the environment. The variability seen is due to other environment variables changing throughout each epoch (like gravity) in some cases the agent will perform especially well or especially badly. The balance between exploration and exploitation is tricky to balance with a fixed epsilon as high values will enable the agent to search for new policies which may help escape local optima but will also prevent the agent from sticking with a good enough policy for long enough.
+
+This was then improved upon in part 2, here I implemented an epsilon decay. The decay value was set to be proportional to the number of epochs remaining over the training period such that initial epochs will decay more slowly than later epochs. This proved to have much better results. Not only were the scores higher on average but there were skewed towards the later epochs suggesting that the successful policies were followed more closely.
+
+\begin{figure}[H]
+    \includegraphics[width=10cm]{hw6/T6_P3/plots/p3_a.png}
+    \centering
+    \caption{Plot of game performance across the learning epochs with a decaying epsilon value starting at 0.01}
+\end{figure}
+
+Lastly, I wanted to again tune the hyperparameters and see if there was any difference between the best initially selected and the best with a decaying epsilon value. As there were now two controlled variables I was able to plot the mean score on a surface plot to visualise the performance across these parameters.
+
+\begin{figure}[H]
+    \includegraphics[width=12cm]{hw6/T6_P3/plots/p3_c.png}
+    \centering
+    \caption{Plot of hyperparameter tuning for alpha and gamma with a decaying epsilon value starting at 0.01}
+\end{figure}
+
+We can see from the plot that while the optimum alpha remained the same, the optimum gamma is now 0.001. This decrease could suggest that the once the optimum policy is found it is better to further discount future rewards in the exploitation stage. 
+
+% \begin{figure}[H]
+%     \centering
+%     \subfloat[Plot of game performance across the learning epochs with a fixed epsilon value of 0.001]{
+%         \includegraphics[width=0.6\textwidth]{hw6/T6_P3/plots/p3_b.png}
+%     }\hfill
+% \end{figure}
+        
+% \begin{figure}[H]
+%     \centering
+%     \\caption{[Plot of game performance across the learning epochs with a fixed epsilon value of 0.001]{
+%         \includegraphics[width=0.6\textwidth]{hw6/T6_P3/plots/p3_b.png}
+%     }\hfill
+% \end{figure}
+
+% \begin{figure}[H]
+%     \subfloat[Plot of game performance across the learning epochs with a decaying epsilon value starting at 0.01]{
+%         \includegraphics[width=0.6\textwidth]{hw6/T6_P3/plots/p3_a.png}
+%     }
+% \end{figure}
 
 \newpage
 \newpage
