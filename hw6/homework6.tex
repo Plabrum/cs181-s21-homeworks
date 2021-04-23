@@ -111,7 +111,88 @@ $$
 
 \end{problem}
 
-\textbf{Solution}
+\newpage
+\textbf{Solution 1:}
+\begin{enumerate}
+    \item \textbf{Draw the graphical model corresponding to the factorization of the joint distribution. Are R and S independent?}
+    We can start by drawing the graphical model of the join distribution.
+    
+    \begin{tikzpicture}[
+        node distance=1cm and .5cm,
+        bn/.style={draw,circle,text width=2cm,align=center}
+        ]
+        \node[bn] (r) {\attr{R}};
+        \node[bn,below right=1cm of r] (g) {\attr{G}};
+        \node[bn,right=2cm of r] (s) {\attr{S}};
+        \path (r) edge[-latex] (g)
+        (s) edge[-latex] (g);
+    \end{tikzpicture}
+    
+    We can now use D-separation rules to see that R and S are independent when G has not been observed.
+    \item \textbf{ You check on the sprinkler without checking on the rain or the grass.  What is the probability that the sprinkler is on?}
+    
+    As G has not been observed, R and S are independent so the probability of the sprinkler being on is $p(S = 1) = 0.5$.
+    
+    \item \textbf{You notice it is raining and check on the sprinkler without checking the grass. What is the probability that the sprinkler is on?}
+    
+    With grass unobserved, R and S are independent and the probability of the sprinkler being on is  $p(S = 1) = 0.5$.
+    
+    \item \textbf{You notice that the grass is wet and go to check on the sprinkler (without checking if it is raining). What is the probability that the sprinkler is on?}
+    
+    Now that the grass is observed R and S are no longer independent, therefore we are looking for 
+    
+    $$
+    p(S | G) = \frac{p(G|S)p(S)}{p(G)}
+    $$
+    
+    We can sum over all probabilities conditioned on rain to get:
+    \begin{align*}
+        p(G|S) &= p(G|R=1,S=1)p(R=1) + p(G|R=0,S=1)p(R=0) \\
+        &= (1)0.25 + (0.75)0.75 = 0.8125
+    \end{align*}
+    
+    We can now also find the total $p(G)$: 
+    
+    \begin{align*}
+        p(G) &= \sum_{i,j} p(G| R = i, S = i)p(R=i)p(S=i) \\
+        &= (0.75)(0.25)(0.5) + (0.75)(0.75)(0.5) + (1)(0.25)(0.5) = 0.5
+    \end{align*}
+    
+    Therefore, we can put this together to get 
+    
+    $$
+    p(S | G) = \frac{0.8125 \cdot 0.5}{0.5} = 0.8125
+    $$
+    
+    \item \textbf{You notice that it is raining and the grass is wet. You go check on the sprinkler.  What is the probability that the sprinkler is on?}
+    
+    Here we are looking for: 
+    $$
+        p(S=1 | G = 1, R = 1) = \frac{p(G=1 | S=1, R = 1)p(S=1)}{p(G=1|R=1)}
+    $$
+    
+    We can now find the join probability of the grass being wet and it raining:
+    
+    \begin{align*}
+        p(G=1| R=1) &= p(G|R=1,S=1)p(S=1) + p(G|R=1,S=0)p(S=0)\\
+        &= (1)(0.5) + (0.75)(0.5)\\
+        &= 0.875
+    \end{align*}
+    
+    Now we can substitute that into our earlier equation:
+    
+    \begin{align*}
+        p(S=1 | G = 1, R = 1) &= \frac{p(G=1 | S=1, R = 1)p(S=1)}{p(G|R)} \\
+        &= \frac{(1)(0.5)}{0.875} =  0.5714286\\
+    \end{align*}
+    
+    
+    \item \textbf{What is Explaining away?}
+    
+    Here, explaining away refers to ...
+    
+    
+\end{enumerate}
 
 \begin{problem}[Policy and Value Iteration, 15 pts]
 
@@ -242,7 +323,20 @@ discount rate $\gamma$, and exploraton rate $\epsilon$. \emph{Do not use outside
     \caption{(a) Screenshot of the Swingy Monkey game.  (b) Interpretations of various pieces of the state dictionary.}
 \end{figure}
     
-\textbf{Solution}
+\textbf{Solution 3}
+
+\begin{figure}[H]
+    \centering
+    \subfloat[SwingyMonkey Screenshot]{
+        \includegraphics[width=0.48\textwidth]{plots/p3_a.png}
+        % \label{fig:swingy}
+    }\hfill
+    \subfloat[SwingyMonkey State]{
+        \includegraphics[width=0.48\textwidth]{figures/swingy-ann}
+        % \label{fig:swingy-ann}
+    }
+    % \caption{(a) Screenshot of the Swingy Monkey game.  (b) Interpretations of various pieces of the state dictionary.}
+\end{figure}
 
 \newpage
 \newpage
