@@ -90,7 +90,7 @@ def make_policy_plot(pi, iter_type = VALUE_ITER, iter_num = 0):
                 dx = -.5; dy = 0
             plt.arrow( col , row , dx , dy , shape='full', fc='w' , ec='gray' , lw=1., length_includes_head=True, head_width=.1 )
     plt.title( iter_type + ' Iteration, i = ' + str(iter_num) )
-    plt.savefig("plots/all/" + iter_type + '_' + str(iter_num) + '.png')
+    plt.savefig("plots/all/ct/" + iter_type + '_' + str(iter_num) + '.png')
     plt.show(block=True)
     # Save the plot to the local directory.
 
@@ -304,7 +304,7 @@ print_every: int
 ct: float
     The convergence tolerance used for policy or value iteration.
 """
-def learn_strategy(planning_type = VALUE_ITER, max_iter = 10, print_every = 5, ct = 0.01):
+def learn_strategy(planning_type = VALUE_ITER, max_iter = 10, print_every = 5, ct = 0.1):
     # Loop over some number of episodes
     V = np.zeros(state_count)
     pi = np.zeros(state_count)
@@ -345,10 +345,10 @@ def learn_strategy(planning_type = VALUE_ITER, max_iter = 10, print_every = 5, c
                 make_policy_plot(pi = pi, iter_type = POLICY_ITER, iter_num = n_iter)
 
 
-print('Beginning policy iteration.')
-learn_strategy(planning_type=POLICY_ITER, max_iter = 10, print_every = 1)
-print('Policy iteration complete.')
+# print('Beginning policy iteration.')
+# learn_strategy(planning_type=POLICY_ITER, max_iter = 10, print_every = 1)
+# print('Policy iteration complete.')
 
 print('Beginning value iteration.')
-learn_strategy(planning_type=VALUE_ITER, max_iter = 10, print_every = 2)
+learn_strategy(planning_type=VALUE_ITER, max_iter = 30, print_every = 1)
 print('Value iteration complete.\n')
