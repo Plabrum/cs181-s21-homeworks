@@ -90,7 +90,7 @@ def make_policy_plot(pi, iter_type = VALUE_ITER, iter_num = 0):
                 dx = -.5; dy = 0
             plt.arrow( col , row , dx , dy , shape='full', fc='w' , ec='gray' , lw=1., length_includes_head=True, head_width=.1 )
     plt.title( iter_type + ' Iteration, i = ' + str(iter_num) )
-    plt.savefig("plots/" + iter_type + '_' + str(iter_num) + '.png')
+    plt.savefig("plots/all/" + iter_type + '_' + str(iter_num) + '.png')
     plt.show(block=True)
     # Save the plot to the local directory.
 
@@ -252,14 +252,6 @@ def update_policy_iteration(V, pi, gamma, theta = 0.1):
     V_new = policy_evaluation(pi, gamma, theta)
     pi_new = np.zeros(state_count)
 
-    # for s in range(state_count):
-    #     a_vals = [0 for a in range(action_count)]
-    #     for a in range(action_count):
-    #         r = get_reward(s,a)
-    #         a_vals[a] = r + gamma*np.sum([get_transition_prob(s,a,s_new) for s_new in range(state_count)])
-    #     pi_new[s] = np.argmax(a_vals)
-    # return V_new, pi_new
-
     def s_p(V_, s_, a_):
         return np.sum([get_transition_prob(s_, a_, sprime)*V_[sprime] for sprime in range(state_count)])
 
@@ -354,7 +346,7 @@ def learn_strategy(planning_type = VALUE_ITER, max_iter = 10, print_every = 5, c
 
 
 print('Beginning policy iteration.')
-learn_strategy(planning_type=POLICY_ITER, max_iter = 10, print_every = 2)
+learn_strategy(planning_type=POLICY_ITER, max_iter = 10, print_every = 1)
 print('Policy iteration complete.')
 
 print('Beginning value iteration.')
